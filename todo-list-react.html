@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List - React</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .todo-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .todo-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-button {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-button:hover {
+            background: #5568d3;
+        }
+
+        .add-button:active {
+            transform: scale(0.98);
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .todo-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-text {
+            flex: 1;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .delete-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .delete-button:hover {
+            background: #c0392b;
+        }
+
+        .delete-button:active {
+            transform: scale(0.95);
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-size: 16px;
+        }
+
+        .task-count {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // TodoItem Component
+        function TodoItem({ todo, onDelete }) {
+            return (
+                <li className="todo-item">
+                    <span className="todo-text">{todo.text}</span>
+                    <button
+                        className="delete-button"
+                        onClick={() => onDelete(todo.id)}
+                    >
+                        Delete
+                    </button>
+                </li>
+            );
+        }
+
+        // TodoInput Component
+        function TodoInput({ onAdd }) {
+            const [inputValue, setInputValue] = useState('');
+            const inputRef = useRef(null);
+
+            const handleSubmit = () => {
+                if (inputValue.trim() === '') {
+                    alert('Please enter a task!');
+                    return;
+                }
+                onAdd(inputValue.trim());
+                setInputValue('');
+                inputRef.current.focus();
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') {
+                    handleSubmit();
+                }
+            };
+
+            return (
+                <div className="input-container">
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        className="todo-input"
+                        placeholder="Add a new task..."
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        autoComplete="off"
+                    />
+                    <button className="add-button" onClick={handleSubmit}>
+                        Add
+                    </button>
+                </div>
+            );
+        }
+
+        // Main App Component
+        function TodoApp() {
+            const [todos, setTodos] = useState([]);
+
+            // Load todos from localStorage on mount
+            useEffect(() => {
+                const savedTodos = localStorage.getItem('todos-react');
+                if (savedTodos) {
+                    setTodos(JSON.parse(savedTodos));
+                }
+            }, []);
+
+            // Save todos to localStorage whenever they change
+            useEffect(() => {
+                localStorage.setItem('todos-react', JSON.stringify(todos));
+            }, [todos]);
+
+            const addTodo = (text) => {
+                const newTodo = {
+                    id: Date.now(),
+                    text: text
+                };
+                setTodos([...todos, newTodo]);
+            };
+
+            const deleteTodo = (id) => {
+                setTodos(todos.filter(todo => todo.id !== id));
+            };
+
+            return (
+                <div className="container">
+                    <h1>My To-Do List (React)</h1>
+
+                    <TodoInput onAdd={addTodo} />
+
+                    {todos.length === 0 ? (
+                        <div className="empty-message">
+                            No tasks yet. Add one above!
+                        </div>
+                    ) : (
+                        <>
+                            <ul className="todo-list">
+                                {todos.map(todo => (
+                                    <TodoItem
+                                        key={todo.id}
+                                        todo={todo}
+                                        onDelete={deleteTodo}
+                                    />
+                                ))}
+                            </ul>
+                            <div className="task-count">
+                                {todos.length} {todos.length === 1 ? 'task' : 'tasks'}
+                            </div>
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TodoApp />);
+    </script>
+</body>
+</html>
