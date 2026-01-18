@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List - React</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>React Apps Collection</title>
     <style>
         * {
             margin: 0;
@@ -26,243 +23,162 @@
 
         .container {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px 40px;
+            max-width: 900px;
             width: 100%;
-            max-width: 500px;
-            padding: 30px;
         }
 
         h1 {
             color: #333;
-            margin-bottom: 25px;
             text-align: center;
+            margin-bottom: 15px;
+            font-size: 42px;
         }
 
-        .input-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .todo-input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .todo-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .add-button {
-            padding: 12px 25px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .add-button:hover {
-            background: #5568d3;
-        }
-
-        .add-button:active {
-            transform: scale(0.98);
-        }
-
-        .todo-list {
-            list-style: none;
-        }
-
-        .todo-item {
-            background: #f8f9fa;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .todo-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .todo-text {
-            flex: 1;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .delete-button {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .delete-button:hover {
-            background: #c0392b;
-        }
-
-        .delete-button:active {
-            transform: scale(0.95);
-        }
-
-        .empty-message {
-            text-align: center;
-            color: #999;
-            padding: 40px 20px;
-            font-size: 16px;
-        }
-
-        .task-count {
+        .subtitle {
             text-align: center;
             color: #666;
-            margin-top: 20px;
+            margin-bottom: 50px;
+            font-size: 18px;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .app-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        .app-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .app-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .app-description {
             font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .tech-badge {
+            background: #f0f0f0;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div class="container">
+        <h1>React Apps Collection</h1>
+        <p class="subtitle">Choose an app to explore</p>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-
-        // TodoItem Component
-        function TodoItem({ todo, onDelete }) {
-            return (
-                <li className="todo-item">
-                    <span className="todo-text">{todo.text}</span>
-                    <button
-                        className="delete-button"
-                        onClick={() => onDelete(todo.id)}
-                    >
-                        Delete
-                    </button>
-                </li>
-            );
-        }
-
-        // TodoInput Component
-        function TodoInput({ onAdd }) {
-            const [inputValue, setInputValue] = useState('');
-            const inputRef = useRef(null);
-
-            const handleSubmit = () => {
-                if (inputValue.trim() === '') {
-                    alert('Please enter a task!');
-                    return;
-                }
-                onAdd(inputValue.trim());
-                setInputValue('');
-                inputRef.current.focus();
-            };
-
-            const handleKeyPress = (e) => {
-                if (e.key === 'Enter') {
-                    handleSubmit();
-                }
-            };
-
-            return (
-                <div className="input-container">
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        className="todo-input"
-                        placeholder="Add a new task..."
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        autoComplete="off"
-                    />
-                    <button className="add-button" onClick={handleSubmit}>
-                        Add
-                    </button>
+        <div class="apps-grid">
+            <a href="todo-list-react.html" class="app-card">
+                <span class="app-icon">✓</span>
+                <div class="app-title">To-Do List</div>
+                <div class="app-description">
+                    Manage your tasks with add, delete, and persistent storage features
                 </div>
-            );
-        }
+            </a>
 
-        // Main App Component
-        function TodoApp() {
-            const [todos, setTodos] = useState([]);
-
-            // Load todos from localStorage on mount
-            useEffect(() => {
-                const savedTodos = localStorage.getItem('todos-react');
-                if (savedTodos) {
-                    setTodos(JSON.parse(savedTodos));
-                }
-            }, []);
-
-            // Save todos to localStorage whenever they change
-            useEffect(() => {
-                localStorage.setItem('todos-react', JSON.stringify(todos));
-            }, [todos]);
-
-            const addTodo = (text) => {
-                const newTodo = {
-                    id: Date.now(),
-                    text: text
-                };
-                setTodos([...todos, newTodo]);
-            };
-
-            const deleteTodo = (id) => {
-                setTodos(todos.filter(todo => todo.id !== id));
-            };
-
-            return (
-                <div className="container">
-                    <h1>My To-Do List</h1>
-
-                    <TodoInput onAdd={addTodo} />
-
-                    {todos.length === 0 ? (
-                        <div className="empty-message">
-                            No tasks yet. Add one above!
-                        </div>
-                    ) : (
-                        <>
-                            <ul className="todo-list">
-                                {todos.map(todo => (
-                                    <TodoItem
-                                        key={todo.id}
-                                        todo={todo}
-                                        onDelete={deleteTodo}
-                                    />
-                                ))}
-                            </ul>
-                            <div className="task-count">
-                                {todos.length} {todos.length === 1 ? 'task' : 'tasks'}
-                            </div>
-                        </>
-                    )}
+            <a href="calculator-react.html" class="app-card">
+                <span class="app-icon">🔢</span>
+                <div class="app-title">Calculator</div>
+                <div class="app-description">
+                    Perform calculations with basic operations, decimals, and percentages
                 </div>
-            );
-        }
+            </a>
 
-        // Render the app
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<TodoApp />);
-    </script>
+            <a href="weather-app-react.html" class="app-card">
+                <span class="app-icon">🌤️</span>
+                <div class="app-title">Weather App</div>
+                <div class="app-description">
+                    Get real-time weather data for any city using OpenWeatherMap API
+                </div>
+            </a>
+
+            <a href="image-gallery-react.html" class="app-card">
+                <span class="app-icon">🖼️</span>
+                <div class="app-title">Image Gallery</div>
+                <div class="app-description">
+                    Browse and filter beautiful images with category and search options
+                </div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p><strong>Built with React Hooks</strong></p>
+            <div class="tech-stack">
+                <span class="tech-badge">React 18</span>
+                <span class="tech-badge">useState</span>
+                <span class="tech-badge">useEffect</span>
+                <span class="tech-badge">useRef</span>
+                <span class="tech-badge">CSS3</span>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
