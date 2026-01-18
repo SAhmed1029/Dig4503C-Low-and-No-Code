@@ -3,12 +3,16 @@ Prompts
 To Do List:
   Can you help me build a to do list where you can add and remove items
   Can you REACT hooks to it?
+  For the todo list made earlier, can you make sure it can be deployed on netlify
 
 Calculator
   Using React, can you help me make a simple calculator
+  For the calculator made earlier, can you make sure it can be deployed on netlify
 
 Weather API
   Can you create a weather api?
+  For the weather api made earlier, can you make sure it can be deployed on netlify
 
 Image Gallery with filter
   Can you create an image gallery with a filtering feature?
+  For the image gallery made earlier, can you make sure it can be deployed on netlify
