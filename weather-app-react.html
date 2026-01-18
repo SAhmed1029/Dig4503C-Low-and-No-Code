@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App - React</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .weather-app {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-button {
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-button:hover {
+            background: #5568d3;
+        }
+
+        .search-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 18px;
+            padding: 40px;
+        }
+
+        .error {
+            background: #fee;
+            border: 2px solid #fcc;
+            border-radius: 10px;
+            padding: 20px;
+            color: #c00;
+            text-align: center;
+        }
+
+        .weather-info {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .location {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .city-name {
+            font-size: 32px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .country {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .main-weather {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .temperature {
+            font-size: 72px;
+            font-weight: 300;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .weather-description {
+            font-size: 24px;
+            color: #666;
+            text-transform: capitalize;
+            margin-bottom: 10px;
+        }
+
+        .weather-icon {
+            font-size: 80px;
+            margin-bottom: 10px;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .detail-item {
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            padding: 40px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function WeatherApp() {
+            const [city, setCity] = useState('');
+            const [weatherData, setWeatherData] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+
+            // OpenWeatherMap API key (free tier - replace with your own)
+            // Get your free API key at: https://openweathermap.org/api
+            const API_KEY = '57fe6017732f192a364532c4c579c36a';
+            const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+
+            const fetchWeather = async (cityName) => {
+                if (!cityName.trim()) {
+                    setError('Please enter a city name');
+                    return;
+                }
+
+                setLoading(true);
+                setError(null);
+
+                try {
+                    const response = await fetch(
+                        `${API_URL}?q=${cityName}&appid=${API_KEY}&units=metric`
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('City not found');
+                    }
+
+                    const data = await response.json();
+                    setWeatherData(data);
+                    setCity('');
+                } catch (err) {
+                    setError(err.message);
+                    setWeatherData(null);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                fetchWeather(city);
+            };
+
+            const getWeatherIcon = (weatherMain) => {
+                const icons = {
+                    Clear: '☀️',
+                    Clouds: '☁️',
+                    Rain: '🌧️',
+                    Drizzle: '🌦️',
+                    Thunderstorm: '⛈️',
+                    Snow: '❄️',
+                    Mist: '🌫️',
+                    Smoke: '🌫️',
+                    Haze: '🌫️',
+                    Dust: '🌫️',
+                    Fog: '🌫️',
+                    Sand: '🌫️',
+                    Ash: '🌫️',
+                    Squall: '💨',
+                    Tornado: '🌪️'
+                };
+                return icons[weatherMain] || '🌍';
+            };
+
+            return (
+                <div className="weather-app">
+                    <h1>Weather App</h1>
+
+                    <form onSubmit={handleSubmit} className="search-container">
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Enter city name..."
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            disabled={loading}
+                        />
+                        <button
+                            type="submit"
+                            className="search-button"
+                            disabled={loading}
+                        >
+                            {loading ? 'Searching...' : 'Search'}
+                        </button>
+                    </form>
+
+                    {loading && <div className="loading">Loading weather data...</div>}
+
+                    {error && (
+                        <div className="error">
+                            {error === 'City not found'
+                                ? 'City not found. Please check the spelling and try again.'
+                                : error === 'Failed to fetch'
+                                ? 'Please add your OpenWeatherMap API key to use this app. Get a free key at openweathermap.org/api'
+                                : error}
+                        </div>
+                    )}
+
+                    {!loading && !error && !weatherData && (
+                        <div className="welcome-message">
+                            Enter a city name to get the current weather conditions
+                        </div>
+                    )}
+
+                    {weatherData && !loading && (
+                        <div className="weather-info">
+                            <div className="location">
+                                <div className="city-name">{weatherData.name}</div>
+                                <div className="country">{weatherData.sys.country}</div>
+                            </div>
+
+                            <div className="main-weather">
+                                <div className="weather-icon">
+                                    {getWeatherIcon(weatherData.weather[0].main)}
+                                </div>
+                                <div className="temperature">
+                                    {Math.round(weatherData.main.temp)}°C
+                                </div>
+                                <div className="weather-description">
+                                    {weatherData.weather[0].description}
+                                </div>
+                            </div>
+
+                            <div className="weather-details">
+                                <div className="detail-item">
+                                    <div className="detail-label">Feels Like</div>
+                                    <div className="detail-value">
+                                        {Math.round(weatherData.main.feels_like)}°C
+                                    </div>
+                                </div>
+                                <div className="detail-item">
+                                    <div className="detail-label">Humidity</div>
+                                    <div className="detail-value">
+                                        {weatherData.main.humidity}%
+                                    </div>
+                                </div>
+                                <div className="detail-item">
+                                    <div className="detail-label">Wind Speed</div>
+                                    <div className="detail-value">
+                                        {Math.round(weatherData.wind.speed * 3.6)} km/h
+                                    </div>
+                                </div>
+                                <div className="detail-item">
+                                    <div className="detail-label">Pressure</div>
+                                    <div className="detail-value">
+                                        {weatherData.main.pressure} hPa
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<WeatherApp />);
+    </script>
+</body>
+</html>
