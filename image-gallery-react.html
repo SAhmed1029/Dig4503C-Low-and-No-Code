@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery - React</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 48px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .filter-button {
+            padding: 12px 24px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .search-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-wrapper {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.1);
+        }
+
+        .image-info {
+            padding: 20px;
+        }
+
+        .image-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .image-category {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .no-results-text {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .no-results-emoji {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .image-count {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .modal-close:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Sample image data
+        const imageData = [
+            { id: 1, title: "Mountain Sunset", category: "nature", url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600" },
+            { id: 2, title: "City Lights", category: "urban", url: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=600" },
+            { id: 3, title: "Ocean Waves", category: "nature", url: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=600" },
+            { id: 4, title: "Abstract Art", category: "art", url: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600" },
+            { id: 5, title: "Forest Path", category: "nature", url: "https://images.unsplash.com/photo-1511497584788-876760111969?w=600" },
+            { id: 6, title: "Modern Architecture", category: "urban", url: "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=600" },
+            { id: 7, title: "Colorful Painting", category: "art", url: "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=600" },
+            { id: 8, title: "Beach Paradise", category: "nature", url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600" },
+            { id: 9, title: "Street Photography", category: "urban", url: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600" },
+            { id: 10, title: "Watercolor Art", category: "art", url: "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=600" },
+            { id: 11, title: "Northern Lights", category: "nature", url: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=600" },
+            { id: 12, title: "Urban Skyline", category: "urban", url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600" },
+        ];
+
+        function ImageGallery() {
+            const [images, setImages] = useState(imageData);
+            const [selectedCategory, setSelectedCategory] = useState('all');
+            const [searchTerm, setSearchTerm] = useState('');
+            const [filteredImages, setFilteredImages] = useState(imageData);
+            const [selectedImage, setSelectedImage] = useState(null);
+
+            const categories = ['all', 'nature', 'urban', 'art'];
+
+            // Filter images based on category and search term
+            useEffect(() => {
+                let filtered = images;
+
+                // Filter by category
+                if (selectedCategory !== 'all') {
+                    filtered = filtered.filter(img => img.category === selectedCategory);
+                }
+
+                // Filter by search term
+                if (searchTerm.trim() !== '') {
+                    filtered = filtered.filter(img =>
+                        img.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        img.category.toLowerCase().includes(searchTerm.toLowerCase())
+                    );
+                }
+
+                setFilteredImages(filtered);
+            }, [selectedCategory, searchTerm, images]);
+
+            const handleCategoryChange = (category) => {
+                setSelectedCategory(category);
+            };
+
+            const openModal = (image) => {
+                setSelectedImage(image);
+            };
+
+            const closeModal = () => {
+                setSelectedImage(null);
+            };
+
+            return (
+                <div className="gallery-container">
+                    <h1>Image Gallery</h1>
+
+                    <div className="filter-container">
+                        <div className="filter-buttons">
+                            {categories.map(category => (
+                                <button
+                                    key={category}
+                                    className={`filter-button ${selectedCategory === category ? 'active' : ''}`}
+                                    onClick={() => handleCategoryChange(category)}
+                                >
+                                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                className="search-input"
+                                placeholder="Search images by title or category..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="image-count">
+                        Showing {filteredImages.length} of {images.length} images
+                    </div>
+
+                    {filteredImages.length === 0 ? (
+                        <div className="no-results">
+                            <div className="no-results-emoji">🔍</div>
+                            <div className="no-results-text">No images found</div>
+                            <p>Try adjusting your filters or search term</p>
+                        </div>
+                    ) : (
+                        <div className="gallery-grid">
+                            {filteredImages.map(image => (
+                                <div
+                                    key={image.id}
+                                    className="gallery-item"
+                                    onClick={() => openModal(image)}
+                                >
+                                    <div className="image-wrapper">
+                                        <img
+                                            src={image.url}
+                                            alt={image.title}
+                                            className="gallery-image"
+                                        />
+                                    </div>
+                                    <div className="image-info">
+                                        <div className="image-title">{image.title}</div>
+                                        <span className="image-category">{image.category}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {selectedImage && (
+                        <div className="modal" onClick={closeModal}>
+                            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                <button className="modal-close" onClick={closeModal}>×</button>
+                                <img
+                                    src={selectedImage.url}
+                                    alt={selectedImage.title}
+                                    className="modal-image"
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ImageGallery />);
+    </script>
+</body>
+</html>
