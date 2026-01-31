@@ -320,6 +320,34 @@ section {
     font-weight: 600;
 }
 
+/* Toppings Card */
+.toppings-card {
+    background: linear-gradient(135deg, var(--light-purple) 0%, var(--light-blue) 100%);
+    grid-column: span 2;
+}
+
+.toppings-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.topping-item {
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--dark);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 768px) {
+    .toppings-card {
+        grid-column: span 1;
+    }
+}
+
 /* About Section */
 .about-section {
     background: linear-gradient(135deg, var(--light-purple) 0%, var(--light-blue) 100%);
