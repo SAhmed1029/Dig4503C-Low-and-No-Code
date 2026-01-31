@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Petite Crêperie | Fresh Handmade Crepes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-pink: #FF6B9D;
+            --primary-yellow: #FFD93D;
+            --primary-coral: #FF8E72;
+            --primary-mint: #6BCB77;
+            --primary-blue: #4D96FF;
+            --light-pink: #FFF0F5;
+            --cream: #FFFBEB;
+            --dark: #2D3436;
+            --gray: #636E72;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--cream);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        .fun-font {
+            font-family: 'Pacifico', cursive;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.8rem;
+            color: var(--primary-pink);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-pink);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary-yellow);
+            transition: width 0.3s;
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-pink);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--light-pink) 0%, var(--cream) 50%, #FFF9E6 100%);
+            padding: 6rem 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 4rem;
+            color: var(--primary-pink);
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .hero-tagline {
+            font-size: 1.5rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-pink), var(--primary-coral));
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-pink);
+            border: 2px solid var(--primary-pink);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-pink);
+            color: white;
+        }
+
+        /* Floating decorations */
+        .decoration {
+            position: absolute;
+            font-size: 4rem;
+            opacity: 0.6;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .deco-1 { top: 15%; left: 10%; animation-delay: 0s; }
+        .deco-2 { top: 25%; right: 15%; animation-delay: 1s; }
+        .deco-3 { bottom: 20%; left: 15%; animation-delay: 2s; }
+        .deco-4 { bottom: 30%; right: 10%; animation-delay: 0.5s; }
+        .deco-5 { top: 50%; left: 5%; animation-delay: 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Section styles */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-pink);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            background: white;
+        }
+
+        .menu-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .menu-tab {
+            padding: 0.8rem 2rem;
+            border: none;
+            background: var(--cream);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-tab.active {
+            background: linear-gradient(135deg, var(--primary-pink), var(--primary-coral));
+            color: white;
+        }
+
+        .menu-tab:hover:not(.active) {
+            background: var(--light-pink);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .menu-card {
+            background: var(--cream);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .menu-card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .menu-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .menu-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .menu-card-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-coral);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-yellow);
+            color: var(--dark);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* About Section */
+        .about-section {
+            background: linear-gradient(135deg, var(--light-pink) 0%, #FFF9E6 100%);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .about-image {
+            background: linear-gradient(135deg, var(--primary-pink), var(--primary-coral));
+            border-radius: 30px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            box-shadow: 0 20px 40px rgba(255, 107, 157, 0.3);
+        }
+
+        .about-text h3 {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: var(--primary-pink);
+            margin-bottom: 1rem;
+        }
+
+        .about-text p {
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Gallery Section */
+        .gallery-section {
+            background: white;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            background: linear-gradient(135deg, var(--cream), var(--light-pink));
+            border-radius: 20px;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item:nth-child(1) { background: linear-gradient(135deg, #FFE5EC, #FFF0F5); }
+        .gallery-item:nth-child(2) { background: linear-gradient(135deg, #FFF9E6, #FFFBEB); }
+        .gallery-item:nth-child(3) { background: linear-gradient(135deg, #E8F5E9, #F1F8E9); }
+        .gallery-item:nth-child(4) { background: linear-gradient(135deg, #E3F2FD, #E8EAF6); }
+        .gallery-item:nth-child(5) { background: linear-gradient(135deg, #FFF3E0, #FBE9E7); }
+        .gallery-item:nth-child(6) { background: linear-gradient(135deg, #FCE4EC, #F3E5F5); }
+
+        /* Location Section */
+        .location-section {
+            background: linear-gradient(135deg, var(--cream) 0%, #FFF9E6 100%);
+        }
+
+        .location-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .location-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .info-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-pink);
+        }
+
+        .info-card p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .hours-grid {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .hours-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .hours-row span:first-child {
+            font-weight: 500;
+        }
+
+        .map-placeholder {
+            background: linear-gradient(135deg, var(--primary-blue), #6BCB77);
+            border-radius: 20px;
+            height: 100%;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .map-placeholder p {
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: white;
+        }
+
+        .contact-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-form {
+            background: var(--cream);
+            padding: 3rem;
+            border-radius: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-pink);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-pink), var(--primary-coral));
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-brand {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: var(--primary-pink);
+            margin-bottom: 1rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-yellow);
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #B2BEC3;
+            line-height: 2;
+            text-decoration: none;
+            display: block;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-pink);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: var(--primary-pink);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #B2BEC3;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-tagline {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .about-content,
+            .location-content {
+                grid-template-columns: 1fr;
+            }
+
+            .about-image {
+                height: 300px;
+            }
+
+            .decoration {
+                display: none;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Menu data
+        const menuItems = {
+            sweet: [
+                { id: 1, name: "Classic Nutella", description: "Creamy Nutella spread with fresh strawberries and powdered sugar", price: 9.99, icon: "🍫", popular: true },
+                { id: 2, name: "Berry Bliss", description: "Mixed berries, whipped cream, and honey drizzle", price: 10.99, icon: "🍓", popular: false },
+                { id: 3, name: "Banana Caramel", description: "Fresh bananas, salted caramel, and crushed almonds", price: 9.99, icon: "🍌", popular: true },
+                { id: 4, name: "Lemon Sugar", description: "Fresh lemon juice with a dusting of sweet sugar", price: 7.99, icon: "🍋", popular: false },
+                { id: 5, name: "S'mores Dream", description: "Chocolate, toasted marshmallow, and graham cracker crumbs", price: 10.99, icon: "🔥", popular: true },
+                { id: 6, name: "Apple Cinnamon", description: "Caramelized apples with warm cinnamon and vanilla ice cream", price: 11.99, icon: "🍎", popular: false },
+            ],
+            savory: [
+                { id: 7, name: "Ham & Cheese", description: "Black forest ham, Swiss cheese, and Dijon mustard", price: 11.99, icon: "🧀", popular: true },
+                { id: 8, name: "Spinach Feta", description: "Fresh spinach, feta cheese, and sun-dried tomatoes", price: 10.99, icon: "🥬", popular: false },
+                { id: 9, name: "Egg Supreme", description: "Scrambled eggs, bacon, cheddar, and fresh chives", price: 12.99, icon: "🥚", popular: true },
+                { id: 10, name: "Mushroom Gruyère", description: "Sautéed mushrooms, Gruyère cheese, and fresh thyme", price: 11.99, icon: "🍄", popular: false },
+                { id: 11, name: "Chicken Pesto", description: "Grilled chicken, basil pesto, and mozzarella", price: 13.99, icon: "🐔", popular: false },
+                { id: 12, name: "Smoked Salmon", description: "Smoked salmon, cream cheese, capers, and dill", price: 14.99, icon: "🐟", popular: true },
+            ],
+            drinks: [
+                { id: 13, name: "French Press Coffee", description: "Rich, aromatic French roast coffee", price: 3.99, icon: "☕", popular: true },
+                { id: 14, name: "Hot Chocolate", description: "Creamy Belgian chocolate topped with whipped cream", price: 4.99, icon: "🍫", popular: false },
+                { id: 15, name: "Fresh Orange Juice", description: "Freshly squeezed orange juice", price: 4.99, icon: "🍊", popular: false },
+                { id: 16, name: "Lavender Latte", description: "Espresso with steamed milk and lavender syrup", price: 5.99, icon: "💜", popular: true },
+                { id: 17, name: "Strawberry Smoothie", description: "Fresh strawberries, yogurt, and honey", price: 6.99, icon: "🍓", popular: false },
+                { id: 18, name: "Mint Lemonade", description: "Fresh lemonade with mint and sparkling water", price: 4.99, icon: "🍃", popular: false },
+            ]
+        };
+
+        // Navbar Component
+        function Navbar() {
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            const [scrolled, setScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <nav className="navbar" style={{ boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.15)' : '0 2px 20px rgba(0,0,0,0.1)' }}>
+                    <a href="#home" className="logo">La Petite Crêperie</a>
+                    <ul className={`nav-links ${mobileMenuOpen ? 'active' : ''}`}>
+                        <li><a href="#home" onClick={() => setMobileMenuOpen(false)}>Home</a></li>
+                        <li><a href="#menu" onClick={() => setMobileMenuOpen(false)}>Menu</a></li>
+                        <li><a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a></li>
+                        <li><a href="#gallery" onClick={() => setMobileMenuOpen(false)}>Gallery</a></li>
+                        <li><a href="#location" onClick={() => setMobileMenuOpen(false)}>Visit Us</a></li>
+                        <li><a href="#contact" onClick={() => setMobileMenuOpen(false)}>Contact</a></li>
+                    </ul>
+                    <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                        {mobileMenuOpen ? '✕' : '☰'}
+                    </button>
+                </nav>
+            );
+        }
+
+        // Hero Component
+        function Hero() {
+            return (
+                <section id="home" className="hero">
+                    <span className="decoration deco-1">🥞</span>
+                    <span className="decoration deco-2">🍓</span>
+                    <span className="decoration deco-3">🍫</span>
+                    <span className="decoration deco-4">🥐</span>
+                    <span className="decoration deco-5">🍳</span>
+                    <div className="hero-content">
+                        <h1>La Petite Crêperie</h1>
+                        <p className="hero-tagline">Handcrafted crepes made with love, served with a smile! ✨</p>
+                        <div className="hero-buttons">
+                            <a href="#menu" className="btn btn-primary">View Our Menu</a>
+                            <a href="#location" className="btn btn-secondary">Find Us</a>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Menu Component
+        function Menu() {
+            const [activeTab, setActiveTab] = useState('sweet');
+
+            return (
+                <section id="menu" className="menu-section">
+                    <h2 className="section-title">Our Menu</h2>
+                    <p className="section-subtitle">Fresh ingredients, endless possibilities! 🌟</p>
+
+                    <div className="menu-tabs">
+                        <button
+                            className={`menu-tab ${activeTab === 'sweet' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('sweet')}
+                        >
+                            🍰 Sweet Crepes
+                        </button>
+                        <button
+                            className={`menu-tab ${activeTab === 'savory' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('savory')}
+                        >
+                            🧀 Savory Crepes
+                        </button>
+                        <button
+                            className={`menu-tab ${activeTab === 'drinks' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('drinks')}
+                        >
+                            ☕ Drinks
+                        </button>
+                    </div>
+
+                    <div className="menu-grid">
+                        {menuItems[activeTab].map(item => (
+                            <div key={item.id} className="menu-card">
+                                {item.popular && <span className="popular-badge">⭐ Popular</span>}
+                                <div className="menu-card-icon">{item.icon}</div>
+                                <h3>{item.name}</h3>
+                                <p>{item.description}</p>
+                                <span className="menu-card-price">${item.price.toFixed(2)}</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // About Component
+        function About() {
+            return (
+                <section id="about" className="about-section">
+                    <h2 className="section-title">Our Story</h2>
+                    <p className="section-subtitle">A passion for perfect crepes since 2015</p>
+
+                    <div className="about-content">
+                        <div className="about-image">
+                            👨‍🍳
+                        </div>
+                        <div className="about-text">
+                            <h3>Made with Love & Tradition</h3>
+                            <p>
+                                Welcome to La Petite Crêperie! We started with a simple dream: to bring the authentic taste of French crêpes to our community. Every crepe we make is crafted with care, using recipes passed down through generations.
+                            </p>
+                            <p>
+                                Our batter is made fresh daily with the finest ingredients – farm-fresh eggs, premium flour, and real butter. Whether you're craving something sweet or savory, we've got the perfect crepe waiting for you!
+                            </p>
+                            <div className="about-features">
+                                <div className="feature-item">
+                                    <span className="feature-icon">🥚</span>
+                                    <span>Fresh Daily</span>
+                                </div>
+                                <div className="feature-item">
+                                    <span className="feature-icon">🌱</span>
+                                    <span>Local Ingredients</span>
+                                </div>
+                                <div className="feature-item">
+                                    <span className="feature-icon">💝</span>
+                                    <span>Made with Love</span>
+                                </div>
+                                <div className="feature-item">
+                                    <span className="feature-icon">🇫🇷</span>
+                                    <span>Authentic Recipes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Gallery Component
+        function Gallery() {
+            const galleryItems = ['🥞', '🍓', '🧀', '☕', '🍫', '🥐'];
+
+            return (
+                <section id="gallery" className="gallery-section">
+                    <h2 className="section-title">Gallery</h2>
+                    <p className="section-subtitle">A feast for your eyes! 📸</p>
+
+                    <div className="gallery-grid">
+                        {galleryItems.map((item, index) => (
+                            <div key={index} className="gallery-item">
+                                {item}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // Location Component
+        function Location() {
+            return (
+                <section id="location" className="location-section">
+                    <h2 className="section-title">Visit Us</h2>
+                    <p className="section-subtitle">We can't wait to see you! 🎉</p>
+
+                    <div className="location-content">
+                        <div className="location-info">
+                            <div className="info-card">
+                                <h3>📍 Location</h3>
+                                <p>123 Crepe Street<br />Downtown District<br />Orlando, FL 32801</p>
+                            </div>
+                            <div className="info-card">
+                                <h3>🕐 Hours</h3>
+                                <div className="hours-grid">
+                                    <div className="hours-row">
+                                        <span>Monday - Friday</span>
+                                        <span>8:00 AM - 9:00 PM</span>
+                                    </div>
+                                    <div className="hours-row">
+                                        <span>Saturday</span>
+                                        <span>9:00 AM - 10:00 PM</span>
+                                    </div>
+                                    <div className="hours-row">
+                                        <span>Sunday</span>
+                                        <span>9:00 AM - 8:00 PM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="info-card">
+                                <h3>📞 Contact</h3>
+                                <p>Phone: (407) 555-CREP<br />Email: hello@lapetitecreperie.com</p>
+                            </div>
+                        </div>
+                        <div className="map-placeholder">
+                            🗺️
+                            <p>Map Location</p>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Contact Component
+        function Contact() {
+            const [formData, setFormData] = useState({
+                name: '',
+                email: '',
+                message: ''
+            });
+            const [submitted, setSubmitted] = useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setSubmitted(true);
+                setTimeout(() => setSubmitted(false), 3000);
+                setFormData({ name: '', email: '', message: '' });
+            };
+
+            return (
+                <section id="contact" className="contact-section">
+                    <h2 className="section-title">Get in Touch</h2>
+                    <p className="section-subtitle">Questions, catering, or just want to say hi? 💌</p>
+
+                    <div className="contact-content">
+                        <form className="contact-form" onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Your Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="John Doe"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Email Address</label>
+                                <input
+                                    type="email"
+                                    placeholder="john@example.com"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Your Message</label>
+                                <textarea
+                                    placeholder="Tell us what's on your mind..."
+                                    value={formData.message}
+                                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                                    required
+                                ></textarea>
+                            </div>
+                            <button type="submit" className="submit-btn">
+                                {submitted ? '✓ Message Sent!' : 'Send Message 🚀'}
+                            </button>
+                        </form>
+                    </div>
+                </section>
+            );
+        }
+
+        // Footer Component
+        function Footer() {
+            return (
+                <footer className="footer">
+                    <div className="footer-content">
+                        <div className="footer-section">
+                            <div className="footer-brand">La Petite Crêperie</div>
+                            <p>Bringing joy one crepe at a time since 2015.</p>
+                            <div className="social-links">
+                                <a href="#" className="social-link">📘</a>
+                                <a href="#" className="social-link">📸</a>
+                                <a href="#" className="social-link">🐦</a>
+                                <a href="#" className="social-link">📌</a>
+                            </div>
+                        </div>
+                        <div className="footer-section">
+                            <h4>Quick Links</h4>
+                            <a href="#menu">Our Menu</a>
+                            <a href="#about">About Us</a>
+                            <a href="#gallery">Gallery</a>
+                            <a href="#contact">Contact</a>
+                        </div>
+                        <div className="footer-section">
+                            <h4>Hours</h4>
+                            <p>Mon-Fri: 8AM - 9PM</p>
+                            <p>Sat: 9AM - 10PM</p>
+                            <p>Sun: 9AM - 8PM</p>
+                        </div>
+                        <div className="footer-section">
+                            <h4>Contact Us</h4>
+                            <p>123 Crepe Street</p>
+                            <p>Orlando, FL 32801</p>
+                            <p>(407) 555-CREP</p>
+                        </div>
+                    </div>
+                    <div className="footer-bottom">
+                        <p>© 2026 La Petite Crêperie. Made with 💖 and lots of Nutella.</p>
+                    </div>
+                </footer>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            useEffect(() => {
+                // Scroll animation observer
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+                return () => observer.disconnect();
+            }, []);
+
+            return (
+                <div>
+                    <Navbar />
+                    <Hero />
+                    <Menu />
+                    <About />
+                    <Gallery />
+                    <Location />
+                    <Contact />
+                    <Footer />
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
