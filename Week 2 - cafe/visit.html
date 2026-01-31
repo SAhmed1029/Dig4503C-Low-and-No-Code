@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Petite Crêperie | Fresh Handmade Crepes</title>
+    <title>Visit Us | La Petite Crêperie</title>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,28 +12,51 @@
     <nav class="navbar">
         <a href="index.html" class="logo">La Petite Crêperie</a>
         <ul class="nav-links">
-            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="index.html">Home</a></li>
             <li><a href="menu.html">Menu</a></li>
             <li><a href="about.html">About</a></li>
-            <li><a href="visit.html">Visit Us</a></li>
+            <li><a href="visit.html" class="active">Visit Us</a></li>
             <li><a href="contact.html">Contact</a></li>
         </ul>
         <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <span class="decoration deco-1">🥞</span>
-        <span class="decoration deco-2">🍓</span>
-        <span class="decoration deco-3">🍫</span>
-        <span class="decoration deco-4">🥐</span>
-        <span class="decoration deco-5">🍳</span>
-        <div class="hero-content">
-            <h1>La Petite Crêperie</h1>
-            <p class="hero-tagline">Handcrafted crepes made with love, served with a smile!</p>
-            <div class="hero-buttons">
-                <a href="menu.html" class="btn btn-primary">View Our Menu</a>
-                <a href="visit.html" class="btn btn-secondary">Find Us</a>
+    <!-- Location Section -->
+    <section class="location-section page-section">
+        <h2 class="section-title">Visit Us</h2>
+        <p class="section-subtitle">We can't wait to see you!</p>
+
+        <div class="location-content">
+            <div class="location-info">
+                <div class="info-card">
+                    <h3>📍 Location</h3>
+                    <p>123 Crepe Street<br>Downtown District<br>Orlando, FL 32801</p>
+                </div>
+                <div class="info-card">
+                    <h3>🕐 Hours</h3>
+                    <div class="hours-grid">
+                        <div class="hours-row">
+                            <span>Monday - Friday</span>
+                            <span>8:00 AM - 9:00 PM</span>
+                        </div>
+                        <div class="hours-row">
+                            <span>Saturday</span>
+                            <span>9:00 AM - 10:00 PM</span>
+                        </div>
+                        <div class="hours-row">
+                            <span>Sunday</span>
+                            <span>9:00 AM - 8:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>📞 Contact</h3>
+                    <p>Phone: (407) 555-CREP<br>Email: hello@lapetitecreperie.com</p>
+                </div>
+            </div>
+            <div class="map-placeholder">
+                🗺️
+                <p>Map Location</p>
             </div>
         </div>
     </section>
