@@ -109,7 +109,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--light-purple) 0%, var(--cream) 50%, var(--light-blue) 100%);
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('../public/images/hero.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     padding: 6rem 2rem 2rem;
     position: relative;
     overflow: hidden;
@@ -124,15 +128,17 @@ body {
 .hero h1 {
     font-family: 'Pacifico', cursive;
     font-size: 4rem;
-    color: var(--primary-blue);
+    color: white;
     margin-bottom: 1rem;
     animation: float 3s ease-in-out infinite;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero-tagline {
     font-size: 1.5rem;
-    color: var(--gray);
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .hero-buttons {
@@ -166,14 +172,14 @@ body {
 }
 
 .btn-secondary {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
     color: var(--primary-blue);
-    border: 2px solid var(--primary-blue);
+    border: 2px solid white;
 }
 
 .btn-secondary:hover {
-    background: var(--primary-blue);
-    color: white;
+    background: white;
+    color: var(--primary-blue);
 }
 
 /* Floating decorations */
@@ -363,7 +369,10 @@ section {
 }
 
 .about-image {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+    background: url('../public/images/feature.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 30px;
     height: 400px;
     display: flex;
@@ -371,6 +380,10 @@ section {
     justify-content: center;
     font-size: 8rem;
     box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+}
+
+.about-image.has-image {
+    font-size: 0;
 }
 
 .about-text h3 {
@@ -654,6 +667,11 @@ section {
 
     .about-image {
         height: 300px;
+        background-size: cover;
+    }
+
+    .hero {
+        background-attachment: scroll;
     }
 
     .decoration {
