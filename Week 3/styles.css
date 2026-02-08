@@ -229,7 +229,11 @@ section {
 
 /* Menu Section */
 .menu-section {
-    background: white;
+    background: url('images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: repeat;
+    background-attachment: fixed;
 }
 
 .menu-tabs {
@@ -489,7 +493,11 @@ section {
 
 /* Contact Section */
 .contact-section {
-    background: white;
+    background: url('images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: repeat;
+    background-attachment: fixed;
 }
 
 .contact-content {
