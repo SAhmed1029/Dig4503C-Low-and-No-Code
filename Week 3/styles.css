@@ -229,11 +229,10 @@ section {
 
 /* Menu Section */
 .menu-section {
-    background: url('images/background.jpg');
-    background-size: cover;
-    background-position: center;
+    background-color: #FAFAFE;
+    background-image: url('images/background.jpg');
+    background-size: 400px auto;
     background-repeat: repeat;
-    background-attachment: fixed;
 }
 
 .menu-tabs {
@@ -493,11 +492,10 @@ section {
 
 /* Contact Section */
 .contact-section {
-    background: url('images/background.jpg');
-    background-size: cover;
-    background-position: center;
+    background-color: #FAFAFE;
+    background-image: url('images/background.jpg');
+    background-size: 400px auto;
     background-repeat: repeat;
-    background-attachment: fixed;
 }
 
 .contact-content {
