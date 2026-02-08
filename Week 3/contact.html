@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | La Petite Crêperie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">La Petite Crêperie</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="visit.html">Visit Us</a></li>
+            <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    </nav>
+
+    <!-- Contact Section -->
+    <section class="contact-section page-section">
+        <h2 class="section-title">Get in Touch</h2>
+        <p class="section-subtitle">Questions, catering, or just want to say hi?</p>
+
+        <div class="contact-content">
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Your Message</label>
+                    <textarea placeholder="Tell us what's on your mind..." required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-brand">La Petite Crêperie</div>
+                <p>Bringing joy one crepe at a time since 2015.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">📸</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">📌</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="menu.html">Our Menu</a>
+                <a href="about.html">About Us</a>
+                <a href="visit.html">Visit Us</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Hours</h4>
+                <p>Mon-Fri: 8AM - 9PM</p>
+                <p>Sat: 9AM - 10PM</p>
+                <p>Sun: 9AM - 8PM</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p>123 Crepe Street</p>
+                <p>Orlando, FL 32801</p>
+                <p>(407) 555-CREP</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 La Petite Crêperie. Made with 💖 and lots of Nutella.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('.submit-btn');
+            btn.textContent = '✓ Message Sent!';
+            btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+
+            // Reset form
+            this.reset();
+
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                btn.textContent = 'Send Message';
+                btn.style.background = '';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

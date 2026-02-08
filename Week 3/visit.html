@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visit Us | La Petite Crêperie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">La Petite Crêperie</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="visit.html" class="active">Visit Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    </nav>
+
+    <!-- Location Section -->
+    <section class="location-section page-section">
+        <h2 class="section-title">Visit Us</h2>
+        <p class="section-subtitle">We can't wait to see you!</p>
+
+        <div class="location-content">
+            <div class="location-info">
+                <div class="info-card">
+                    <h3>📍 Location</h3>
+                    <p>123 Crepe Street<br>Downtown District<br>Orlando, FL 32801</p>
+                </div>
+                <div class="info-card">
+                    <h3>🕐 Hours</h3>
+                    <div class="hours-grid">
+                        <div class="hours-row">
+                            <span>Monday - Friday</span>
+                            <span>8:00 AM - 9:00 PM</span>
+                        </div>
+                        <div class="hours-row">
+                            <span>Saturday</span>
+                            <span>9:00 AM - 10:00 PM</span>
+                        </div>
+                        <div class="hours-row">
+                            <span>Sunday</span>
+                            <span>9:00 AM - 8:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>📞 Contact</h3>
+                    <p>Phone: (407) 555-CREP<br>Email: hello@lapetitecreperie.com</p>
+                </div>
+            </div>
+            <div class="map-placeholder">
+                🗺️
+                <p>Map Location</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-brand">La Petite Crêperie</div>
+                <p>Bringing joy one crepe at a time since 2015.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">📸</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">📌</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="menu.html">Our Menu</a>
+                <a href="about.html">About Us</a>
+                <a href="visit.html">Visit Us</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Hours</h4>
+                <p>Mon-Fri: 8AM - 9PM</p>
+                <p>Sat: 9AM - 10PM</p>
+                <p>Sun: 9AM - 8PM</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p>123 Crepe Street</p>
+                <p>Orlando, FL 32801</p>
+                <p>(407) 555-CREP</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 La Petite Crêperie. Made with 💖 and lots of Nutella.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        }
+    </script>
+</body>
+</html>

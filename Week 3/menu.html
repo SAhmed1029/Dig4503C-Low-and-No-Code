@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | La Petite Crêperie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">La Petite Crêperie</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="menu.html" class="active">Menu</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="visit.html">Visit Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    </nav>
+
+    <!-- Menu Section -->
+    <section class="menu-section page-section">
+        <h2 class="section-title">Our Menu</h2>
+        <p class="section-subtitle">Fresh ingredients, endless possibilities!</p>
+
+        <div class="menu-tabs">
+            <button class="menu-tab active" onclick="showCategory('sweet')">🍰 Sweet Crepes</button>
+            <button class="menu-tab" onclick="showCategory('savory')">🧀 Savory Crepes</button>
+            <button class="menu-tab" onclick="showCategory('drinks')">☕ Drinks</button>
+            <button class="menu-tab" onclick="showCategory('boba')">🧋 Boba</button>
+        </div>
+
+        <!-- Sweet Crepes -->
+        <div id="sweet" class="menu-grid menu-category active">
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🍫</div>
+                <h3>Classic Nutella</h3>
+                <p>Creamy Nutella spread with fresh strawberries and powdered sugar</p>
+                <span class="menu-card-price">$9.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍓</div>
+                <h3>Berry Bliss</h3>
+                <p>Mixed berries, whipped cream, and honey drizzle</p>
+                <span class="menu-card-price">$10.99</span>
+            </div>
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🍌</div>
+                <h3>Banana Caramel</h3>
+                <p>Fresh bananas, salted caramel, and crushed almonds</p>
+                <span class="menu-card-price">$9.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍋</div>
+                <h3>Lemon Sugar</h3>
+                <p>Fresh lemon juice with a dusting of sweet sugar</p>
+                <span class="menu-card-price">$7.99</span>
+            </div>
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🔥</div>
+                <h3>S'mores Dream</h3>
+                <p>Chocolate, toasted marshmallow, and graham cracker crumbs</p>
+                <span class="menu-card-price">$10.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍎</div>
+                <h3>Apple Cinnamon</h3>
+                <p>Caramelized apples with warm cinnamon and vanilla ice cream</p>
+                <span class="menu-card-price">$11.99</span>
+            </div>
+        </div>
+
+        <!-- Savory Crepes -->
+        <div id="savory" class="menu-grid menu-category">
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🧀</div>
+                <h3>Ham & Cheese</h3>
+                <p>Black forest ham, Swiss cheese, and Dijon mustard</p>
+                <span class="menu-card-price">$11.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🥬</div>
+                <h3>Spinach Feta</h3>
+                <p>Fresh spinach, feta cheese, and sun-dried tomatoes</p>
+                <span class="menu-card-price">$10.99</span>
+            </div>
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🥚</div>
+                <h3>Egg Supreme</h3>
+                <p>Scrambled eggs, bacon, cheddar, and fresh chives</p>
+                <span class="menu-card-price">$12.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍄</div>
+                <h3>Mushroom Gruyère</h3>
+                <p>Sautéed mushrooms, Gruyère cheese, and fresh thyme</p>
+                <span class="menu-card-price">$11.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🐔</div>
+                <h3>Chicken Pesto</h3>
+                <p>Grilled chicken, basil pesto, and mozzarella</p>
+                <span class="menu-card-price">$13.99</span>
+            </div>
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🐟</div>
+                <h3>Smoked Salmon</h3>
+                <p>Smoked salmon, cream cheese, capers, and dill</p>
+                <span class="menu-card-price">$14.99</span>
+            </div>
+        </div>
+
+        <!-- Drinks -->
+        <div id="drinks" class="menu-grid menu-category">
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">☕</div>
+                <h3>French Press Coffee</h3>
+                <p>Rich, aromatic French roast coffee</p>
+                <span class="menu-card-price">$3.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍫</div>
+                <h3>Hot Chocolate</h3>
+                <p>Creamy Belgian chocolate topped with whipped cream</p>
+                <span class="menu-card-price">$4.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍊</div>
+                <h3>Fresh Orange Juice</h3>
+                <p>Freshly squeezed orange juice</p>
+                <span class="menu-card-price">$4.99</span>
+            </div>
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">💜</div>
+                <h3>Lavender Latte</h3>
+                <p>Espresso with steamed milk and lavender syrup</p>
+                <span class="menu-card-price">$5.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍓</div>
+                <h3>Strawberry Smoothie</h3>
+                <p>Fresh strawberries, yogurt, and honey</p>
+                <span class="menu-card-price">$6.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍃</div>
+                <h3>Mint Lemonade</h3>
+                <p>Fresh lemonade with mint and sparkling water</p>
+                <span class="menu-card-price">$4.99</span>
+            </div>
+        </div>
+
+        <!-- Boba -->
+        <div id="boba" class="menu-grid menu-category">
+            <!-- Milk Teas -->
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🧋</div>
+                <h3>Classic Milk Tea</h3>
+                <p>Traditional black milk tea with a creamy finish</p>
+                <span class="menu-card-price">$5.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍵</div>
+                <h3>Taro Milk Tea</h3>
+                <p>Sweet and creamy purple taro with fresh milk</p>
+                <span class="menu-card-price">$6.49</span>
+            </div>
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🤎</div>
+                <h3>Brown Sugar Milk Tea</h3>
+                <p>Tiger stripe brown sugar with fresh milk and boba</p>
+                <span class="menu-card-price">$6.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍃</div>
+                <h3>Matcha Milk Tea</h3>
+                <p>Premium Japanese matcha with creamy milk</p>
+                <span class="menu-card-price">$6.49</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🥜</div>
+                <h3>Thai Milk Tea</h3>
+                <p>Rich and aromatic Thai tea with condensed milk</p>
+                <span class="menu-card-price">$5.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍪</div>
+                <h3>Oolong Milk Tea</h3>
+                <p>Floral oolong tea with smooth milk blend</p>
+                <span class="menu-card-price">$5.99</span>
+            </div>
+
+            <!-- Fruit Teas -->
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🍑</div>
+                <h3>Peach Green Tea</h3>
+                <p>Refreshing green tea with real peach pieces</p>
+                <span class="menu-card-price">$5.99</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🥭</div>
+                <h3>Mango Passion Fruit</h3>
+                <p>Tropical mango with tangy passion fruit</p>
+                <span class="menu-card-price">$6.49</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍓</div>
+                <h3>Strawberry Lychee</h3>
+                <p>Sweet strawberry with fragrant lychee</p>
+                <span class="menu-card-price">$6.49</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍋</div>
+                <h3>Lemon Wintermelon</h3>
+                <p>Zesty lemon with refreshing wintermelon</p>
+                <span class="menu-card-price">$5.49</span>
+            </div>
+
+            <!-- Smoothies -->
+            <div class="menu-card">
+                <span class="popular-badge">⭐ Popular</span>
+                <div class="menu-card-icon">🫐</div>
+                <h3>Mixed Berry Smoothie</h3>
+                <p>Blueberry, raspberry, and strawberry blend</p>
+                <span class="menu-card-price">$7.49</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🥭</div>
+                <h3>Mango Coconut Smoothie</h3>
+                <p>Tropical mango with creamy coconut</p>
+                <span class="menu-card-price">$7.49</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍌</div>
+                <h3>Banana Matcha Smoothie</h3>
+                <p>Fresh banana blended with matcha green tea</p>
+                <span class="menu-card-price">$7.49</span>
+            </div>
+            <div class="menu-card">
+                <div class="menu-card-icon">🍇</div>
+                <h3>Taro Smoothie</h3>
+                <p>Creamy taro with vanilla ice cream blend</p>
+                <span class="menu-card-price">$7.99</span>
+            </div>
+
+            <!-- Toppings Card -->
+            <div class="menu-card toppings-card">
+                <div class="menu-card-icon">✨</div>
+                <h3>Add-On Toppings</h3>
+                <p class="toppings-list">
+                    <span class="topping-item">🧀 Cheese Foam +$1.00</span>
+                    <span class="topping-item">🍮 Creme Brulee +$1.25</span>
+                    <span class="topping-item">⚫ Tapioca Boba +$0.75</span>
+                    <span class="topping-item">🔴 Popping Boba +$0.75</span>
+                    <span class="topping-item">🍮 Pudding +$0.75</span>
+                    <span class="topping-item">🍓 Fruit Jellies +$0.75</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-brand">La Petite Crêperie</div>
+                <p>Bringing joy one crepe at a time since 2015.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">📸</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">📌</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="menu.html">Our Menu</a>
+                <a href="about.html">About Us</a>
+                <a href="visit.html">Visit Us</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Hours</h4>
+                <p>Mon-Fri: 8AM - 9PM</p>
+                <p>Sat: 9AM - 10PM</p>
+                <p>Sun: 9AM - 8PM</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p>123 Crepe Street</p>
+                <p>Orlando, FL 32801</p>
+                <p>(407) 555-CREP</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 La Petite Crêperie. Made with 💖 and lots of Nutella.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            navLinks.classList.toggle('active');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        }
+
+        function showCategory(category) {
+            // Hide all categories
+            document.querySelectorAll('.menu-category').forEach(cat => {
+                cat.classList.remove('active');
+            });
+            // Remove active from all tabs
+            document.querySelectorAll('.menu-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Show selected category
+            document.getElementById(category).classList.add('active');
+            // Set active tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
