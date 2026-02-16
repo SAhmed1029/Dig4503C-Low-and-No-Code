@@ -1,0 +1,16 @@
+{
+  "name": "dev-notes-server",
+  "version": "1.0.0",
+  "description": "My first MCP server – Dev Notes & Weather Checker",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  }
+}
