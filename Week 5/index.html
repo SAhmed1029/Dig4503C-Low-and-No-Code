@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Apps Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 42px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 50px;
+            font-size: 18px;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .app-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        .app-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .app-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .app-description {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .tech-badge {
+            background: #f0f0f0;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>React Apps Collection</h1>
+        <p class="subtitle">Choose an app to explore</p>
+
+        <div class="apps-grid">
+            <a href="todo-list-react.html" class="app-card">
+                <span class="app-icon">✓</span>
+                <div class="app-title">To-Do List</div>
+                <div class="app-description">
+                    Manage your tasks with add, delete, and persistent storage features
+                </div>
+            </a>
+
+            <a href="calculator-react.html" class="app-card">
+                <span class="app-icon">🔢</span>
+                <div class="app-title">Calculator</div>
+                <div class="app-description">
+                    Perform calculations with basic operations, decimals, and percentages
+                </div>
+            </a>
+
+            <a href="weather-app-react.html" class="app-card">
+                <span class="app-icon">🌤️</span>
+                <div class="app-title">Weather App</div>
+                <div class="app-description">
+                    Get real-time weather data for any city using OpenWeatherMap API
+                </div>
+            </a>
+
+            <a href="image-gallery-react.html" class="app-card">
+                <span class="app-icon">🖼️</span>
+                <div class="app-title">Image Gallery</div>
+                <div class="app-description">
+                    Browse and filter beautiful images with category and search options
+                </div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p><strong>Built with React Hooks</strong></p>
+            <div class="tech-stack">
+                <span class="tech-badge">React 18</span>
+                <span class="tech-badge">useState</span>
+                <span class="tech-badge">useEffect</span>
+                <span class="tech-badge">useRef</span>
+                <span class="tech-badge">CSS3</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
