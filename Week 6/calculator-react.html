@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator - React</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator {
+            background: #222;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .display {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+            text-align: right;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .display-previous {
+            color: #888;
+            font-size: 18px;
+            min-height: 24px;
+            word-wrap: break-word;
+        }
+
+        .display-current {
+            color: #fff;
+            font-size: 48px;
+            font-weight: 300;
+            word-wrap: break-word;
+            min-height: 50px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .button {
+            background: #333;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 500;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .button:hover {
+            background: #444;
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            transform: scale(0.95);
+        }
+
+        .button.operator {
+            background: #667eea;
+        }
+
+        .button.operator:hover {
+            background: #5568d3;
+        }
+
+        .button.clear {
+            background: #e74c3c;
+            grid-column: span 2;
+        }
+
+        .button.clear:hover {
+            background: #c0392b;
+        }
+
+        .button.equals {
+            background: #27ae60;
+            grid-column: span 2;
+        }
+
+        .button.equals:hover {
+            background: #229954;
+        }
+
+        .button.zero {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function Calculator() {
+            const [display, setDisplay] = useState('0');
+            const [previousValue, setPreviousValue] = useState('');
+            const [operation, setOperation] = useState(null);
+            const [waitingForOperand, setWaitingForOperand] = useState(false);
+
+            const handleNumber = (num) => {
+                if (waitingForOperand) {
+                    setDisplay(String(num));
+                    setWaitingForOperand(false);
+                } else {
+                    setDisplay(display === '0' ? String(num) : display + num);
+                }
+            };
+
+            const handleDecimal = () => {
+                if (waitingForOperand) {
+                    setDisplay('0.');
+                    setWaitingForOperand(false);
+                } else if (display.indexOf('.') === -1) {
+                    setDisplay(display + '.');
+                }
+            };
+
+            const handleOperation = (nextOperation) => {
+                const inputValue = parseFloat(display);
+
+                if (previousValue === '') {
+                    setPreviousValue(display);
+                } else if (operation) {
+                    const currentValue = previousValue || '0';
+                    const newValue = calculate(parseFloat(currentValue), inputValue, operation);
+
+                    setDisplay(String(newValue));
+                    setPreviousValue(String(newValue));
+                }
+
+                setWaitingForOperand(true);
+                setOperation(nextOperation);
+            };
+
+            const calculate = (firstValue, secondValue, operation) => {
+                switch (operation) {
+                    case '+':
+                        return firstValue + secondValue;
+                    case '-':
+                        return firstValue - secondValue;
+                    case '*':
+                        return firstValue * secondValue;
+                    case '/':
+                        return firstValue / secondValue;
+                    default:
+                        return secondValue;
+                }
+            };
+
+            const handleEquals = () => {
+                const inputValue = parseFloat(display);
+
+                if (operation && previousValue !== '') {
+                    const newValue = calculate(parseFloat(previousValue), inputValue, operation);
+                    setDisplay(String(newValue));
+                    setPreviousValue('');
+                    setOperation(null);
+                    setWaitingForOperand(true);
+                }
+            };
+
+            const handleClear = () => {
+                setDisplay('0');
+                setPreviousValue('');
+                setOperation(null);
+                setWaitingForOperand(false);
+            };
+
+            const handlePercentage = () => {
+                const value = parseFloat(display);
+                setDisplay(String(value / 100));
+            };
+
+            const handleToggleSign = () => {
+                const value = parseFloat(display);
+                setDisplay(String(value * -1));
+            };
+
+            const getDisplayPrevious = () => {
+                if (previousValue && operation) {
+                    return `${previousValue} ${operation}`;
+                }
+                return '';
+            };
+
+            return (
+                <div className="calculator">
+                    <div className="display">
+                        <div className="display-previous">{getDisplayPrevious()}</div>
+                        <div className="display-current">{display}</div>
+                    </div>
+
+                    <div className="buttons">
+                        <button className="button clear" onClick={handleClear}>AC</button>
+                        <button className="button" onClick={handleToggleSign}>+/-</button>
+                        <button className="button" onClick={handlePercentage}>%</button>
+
+                        <button className="button operator" onClick={() => handleOperation('/')}>÷</button>
+
+                        <button className="button" onClick={() => handleNumber(7)}>7</button>
+                        <button className="button" onClick={() => handleNumber(8)}>8</button>
+                        <button className="button" onClick={() => handleNumber(9)}>9</button>
+                        <button className="button operator" onClick={() => handleOperation('*')}>×</button>
+
+                        <button className="button" onClick={() => handleNumber(4)}>4</button>
+                        <button className="button" onClick={() => handleNumber(5)}>5</button>
+                        <button className="button" onClick={() => handleNumber(6)}>6</button>
+                        <button className="button operator" onClick={() => handleOperation('-')}>−</button>
+
+                        <button className="button" onClick={() => handleNumber(1)}>1</button>
+                        <button className="button" onClick={() => handleNumber(2)}>2</button>
+                        <button className="button" onClick={() => handleNumber(3)}>3</button>
+                        <button className="button operator" onClick={() => handleOperation('+')}>+</button>
+
+                        <button className="button zero" onClick={() => handleNumber(0)}>0</button>
+                        <button className="button" onClick={handleDecimal}>.</button>
+                        <button className="button equals" onClick={handleEquals}>=</button>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Calculator />);
+    </script>
+</body>
+</html>
