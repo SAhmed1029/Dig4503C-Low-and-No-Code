@@ -181,9 +181,31 @@
         .reset-bg-button:hover {
             background: #5568d3;
         }
+
+        .home-button {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            transition: background 0.2s;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: white;
+        }
     </style>
 </head>
 <body>
+    <a href="index.html" class="home-button">&#8592; Home</a>
+
     <div class="color-picker-toolbar">
         <label for="bg-color">Background:</label>
         <input type="color" id="bg-color" value="#667eea">
