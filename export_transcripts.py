@@ -4,7 +4,7 @@ Exports Claude Code session transcripts for this project to:
   - Week 8/transcript_export.html   (full, styled conversation log)
   - Week 8/TRANSCRIPT-HIGHLIGHTS.md (summary of key sessions)
 
-Only includes Week 8 sessions (March 8, 2026 — the Spoonful app).
+Only includes the current Week 8 session (Spoonful app).
 """
 
 import json
@@ -18,8 +18,8 @@ from pathlib import Path
 PROJECT_DIR = Path(r"C:\Users\sarap\.claude\projects\c--Users-sarap-Documents-GitHub-Dig4503C-Low-and-No-Code")
 OUTPUT_HTML = Path(r"c:\Users\sarap\Documents\GitHub\Dig4503C-Low-and-No-Code\Week 8\transcript_export.html")
 OUTPUT_MD   = Path(r"c:\Users\sarap\Documents\GitHub\Dig4503C-Low-and-No-Code\Week 8\TRANSCRIPT-HIGHLIGHTS.md")
-MIN_SIZE_KB = 5   # skip stub sessions smaller than this
-FILTER_DATE = "2026-03-08"  # only include sessions from this date (Week 8)
+# Only this session — the active Week 8 / Spoonful session
+SESSION_FILE = PROJECT_DIR / "89a41839-8e29-42eb-a416-d7423c2f1322.jsonl"
 
 # Tool calls we surface in the transcript
 VISIBLE_TOOLS = {"Bash", "Edit", "Write", "Read", "Glob", "Grep", "WebFetch", "WebSearch"}
@@ -112,27 +112,21 @@ def first_user_prompt(messages: list[dict]) -> str:
             return t[:120] + ("…" if len(t) > 120 else "")
     return "(no prompt)"
 
-# ── Load all sessions ─────────────────────────────────────────────────────────
+# ── Load single session ───────────────────────────────────────────────────────
 sessions = []
-for jsonl in sorted(PROJECT_DIR.glob("*.jsonl"), key=lambda p: p.stat().st_mtime):
-    if jsonl.stat().st_size < MIN_SIZE_KB * 1024:
-        continue
-    messages = load_session(jsonl)
-    if not messages:
-        continue
+messages = load_session(SESSION_FILE)
+if messages:
     ts_vals = [m["ts"] for m in messages if m["ts"]]
-    first_ts = min(ts_vals) if ts_vals else ""
-    last_ts  = max(ts_vals) if ts_vals else ""
     sessions.append({
-        "id": jsonl.stem,
-        "path": jsonl,
+        "id": SESSION_FILE.stem,
+        "path": SESSION_FILE,
         "messages": messages,
-        "first_ts": first_ts,
-        "last_ts": last_ts,
+        "first_ts": min(ts_vals) if ts_vals else "",
+        "last_ts":  max(ts_vals) if ts_vals else "",
         "first_prompt": first_user_prompt(messages),
     })
 
-print(f"Loaded {len(sessions)} sessions with content.")
+print(f"Loaded {len(sessions)} session — {len(messages)} messages.")
 
 # ── Build HTML ────────────────────────────────────────────────────────────────
 CSS = """
@@ -221,10 +215,10 @@ def build_html(sessions: list[dict]) -> str:
 <body>
 <div class="page-header">
   <div>
-    <h1>Spoonful &mdash; Claude Code Transcripts</h1>
+    <h1>Week 8 &mdash; Spoonful App &mdash; Claude Code Transcript</h1>
     <small>Project: Dig4503C Low-and-No-Code &nbsp;|&nbsp; Exported {now}</small>
   </div>
-  <small>{len(sessions)} sessions</small>
+  <small>{len(sessions[0]["messages"])} messages</small>
 </div>
 """]
 
@@ -278,9 +272,9 @@ print(f"HTML written -> {OUTPUT_HTML}  ({len(html_output)//1024} KB)")
 
 # ── Build TRANSCRIPT-HIGHLIGHTS.md ───────────────────────────────────────────
 def build_md(sessions: list[dict]) -> str:
-    lines = ["# Claude Code Transcript Highlights", "",
-             f"> Exported {datetime.now().strftime('%Y-%m-%d')} from project **Dig4503C Low-and-No-Code**",
-             f"> {len(sessions)} sessions total", ""]
+    lines = ["# Week 8 — Spoonful App — Claude Code Transcript Highlights", "",
+             f"> Exported {datetime.now().strftime('%Y-%m-%d')} &nbsp;|&nbsp; Project: **Dig4503C Low-and-No-Code**",
+             ""]
 
     for i, s in enumerate(sessions, 1):
         date = fmt_ts(s["first_ts"])[:10] if s["first_ts"] else "unknown"
