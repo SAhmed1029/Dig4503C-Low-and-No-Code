@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spoonful</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    // ─── Seed Data ───────────────────────────────────────────────────────────────
+    const SEED_RECIPES = [
+      {
+        id: 1, emoji: '🥞', title: 'Fluffy Buttermilk Pancakes',
+        category: 'Breakfast', time: '20 min', userAdded: false,
+        description: 'Light, airy pancakes with a golden crust and soft center.',
+        ingredients: ['1 cup flour','1 cup buttermilk','1 egg','2 tbsp butter','1 tbsp sugar','1 tsp baking powder','½ tsp baking soda','pinch of salt'],
+        steps: [
+          'Whisk together flour, sugar, baking powder, baking soda, and salt.',
+          'In a separate bowl, beat the egg, buttermilk, and melted butter.',
+          'Fold wet ingredients into dry until just combined (lumps are fine).',
+          'Heat a non-stick pan over medium heat and lightly grease.',
+          'Pour ¼ cup batter per pancake and cook until bubbles form, then flip.',
+          'Cook 1–2 more minutes and serve with maple syrup.',
+        ]
+      },
+      {
+        id: 2, emoji: '🍝', title: 'Classic Spaghetti Bolognese',
+        category: 'Dinner', time: '45 min', userAdded: false,
+        description: 'Rich, hearty meat sauce slow-cooked with tomatoes and herbs.',
+        ingredients: ['400g spaghetti','500g ground beef','1 onion','3 garlic cloves','400g canned tomatoes','2 tbsp tomato paste','100ml red wine','olive oil','salt','pepper','basil'],
+        steps: [
+          'Dice onion and mince garlic. Cook in olive oil over medium heat until soft.',
+          'Add ground beef and cook until browned, breaking it up.',
+          'Stir in tomato paste and cook 2 minutes.',
+          'Pour in red wine and let it reduce by half.',
+          'Add canned tomatoes, season, and simmer on low for 30 minutes.',
+          'Cook spaghetti per package instructions, drain, and toss with sauce.',
+          'Garnish with fresh basil and parmesan.',
+        ]
+      },
+      {
+        id: 3, emoji: '🥗', title: 'Greek Salad',
+        category: 'Lunch', time: '10 min', userAdded: false,
+        description: 'Crisp vegetables with feta and olives in a lemon-herb dressing.',
+        ingredients: ['2 tomatoes','1 cucumber','½ red onion','100g feta cheese','½ cup kalamata olives','3 tbsp olive oil','1 tbsp lemon juice','1 tsp oregano','salt','pepper'],
+        steps: [
+          'Chop tomatoes, cucumber, and red onion into chunky pieces.',
+          'Combine vegetables in a large bowl.',
+          'Whisk together olive oil, lemon juice, oregano, salt, and pepper.',
+          'Pour dressing over salad and toss gently.',
+          'Top with crumbled feta and olives. Serve immediately.',
+        ]
+      },
+      {
+        id: 4, emoji: '🍰', title: 'Lemon Cheesecake',
+        category: 'Dessert', time: '4 hrs', userAdded: false,
+        description: 'Creamy no-bake cheesecake with a bright lemon zing.',
+        ingredients: ['200g digestive biscuits','100g butter','500g cream cheese','150g icing sugar','zest of 2 lemons','juice of 1 lemon','300ml double cream'],
+        steps: [
+          'Crush biscuits and mix with melted butter. Press into a lined tin and chill.',
+          'Beat cream cheese until smooth, then mix in icing sugar, lemon zest, and juice.',
+          'Whip double cream to soft peaks and fold into cheese mixture.',
+          'Pour filling over base, smooth the top, and refrigerate for at least 4 hours.',
+          'Serve with a dusting of icing sugar or lemon slices.',
+        ]
+      },
+      {
+        id: 5, emoji: '🍜', title: 'Miso Ramen',
+        category: 'Dinner', time: '35 min', userAdded: false,
+        description: 'Warming Japanese broth with noodles, egg, and toppings.',
+        ingredients: ['2 portions ramen noodles','3 tbsp white miso paste','1L chicken broth','2 soft-boiled eggs','100g mushrooms','2 spring onions','1 tbsp soy sauce','sesame oil','nori sheets'],
+        steps: [
+          'Heat chicken broth in a pot over medium heat.',
+          'Whisk miso paste into the broth — do not boil after adding miso.',
+          'Add soy sauce and a drizzle of sesame oil. Taste and adjust.',
+          'Sauté mushrooms in a separate pan until golden.',
+          'Cook noodles per package, drain, and divide between bowls.',
+          'Ladle broth over noodles. Top with egg (halved), mushrooms, spring onions, and nori.',
+        ]
+      },
+      {
+        id: 6, emoji: '🫐', title: 'Blueberry Smoothie Bowl',
+        category: 'Breakfast', time: '5 min', userAdded: false,
+        description: 'Thick, vibrant smoothie topped with fresh fruit and granola.',
+        ingredients: ['1 cup frozen blueberries','1 frozen banana','½ cup yogurt','¼ cup milk','toppings: granola, fresh berries, honey, chia seeds'],
+        steps: [
+          'Blend frozen blueberries, banana, yogurt, and milk until thick and smooth.',
+          'Pour into a bowl — it should be thick enough to hold toppings.',
+          'Arrange granola, fresh berries, and a drizzle of honey on top.',
+          'Sprinkle chia seeds and serve immediately.',
+        ]
+      },
+      {
+        id: 7, emoji: '🌮', title: 'Chicken Tacos',
+        category: 'Lunch', time: '25 min', userAdded: false,
+        description: 'Juicy seasoned chicken in warm tortillas with fresh toppings.',
+        ingredients: ['500g chicken breast','2 tsp cumin','1 tsp paprika','1 tsp garlic powder','½ tsp chili flakes','8 small corn tortillas','avocado','lime','cilantro','sour cream','shredded cabbage'],
+        steps: [
+          'Mix cumin, paprika, garlic powder, chili flakes, salt, and pepper.',
+          'Coat chicken in spices and cook in a hot skillet until cooked through.',
+          'Rest chicken 5 minutes, then slice or shred.',
+          'Warm tortillas in a dry pan or directly over a flame.',
+          'Fill tortillas with chicken, cabbage, avocado slices, and cilantro.',
+          'Squeeze lime and add sour cream. Serve immediately.',
+        ]
+      },
+      {
+        id: 8, emoji: '🍪', title: 'Chocolate Chip Cookies',
+        category: 'Dessert', time: '30 min', userAdded: false,
+        description: 'Perfectly chewy cookies with crispy edges and gooey centres.',
+        ingredients: ['225g butter','200g brown sugar','100g white sugar','2 eggs','1 tsp vanilla','350g flour','1 tsp baking soda','1 tsp salt','300g chocolate chips'],
+        steps: [
+          'Preheat oven to 190°C (375°F).',
+          'Beat butter and both sugars until light and fluffy.',
+          'Add eggs and vanilla, mix well.',
+          'Stir in flour, baking soda, and salt until just combined.',
+          'Fold in chocolate chips.',
+          'Drop rounded tablespoons onto baking sheets, spacing 5cm apart.',
+          'Bake 10–12 minutes until edges are golden but centres look slightly underdone.',
+          'Cool on pan 5 minutes before transferring.',
+        ]
+      },
+      {
+        id: 9, emoji: '🥑', title: 'Guacamole & Chips',
+        category: 'Snack', time: '10 min', userAdded: false,
+        description: 'Chunky, fresh guacamole with just the right amount of heat.',
+        ingredients: ['3 ripe avocados','juice of 1 lime','½ red onion','1 jalapeño','2 tbsp cilantro','1 garlic clove','salt','tortilla chips'],
+        steps: [
+          'Halve and pit avocados, scoop flesh into a bowl.',
+          'Mash with a fork to your desired texture (chunky is best).',
+          'Finely dice red onion, jalapeño, and garlic.',
+          'Stir in lime juice, diced ingredients, and cilantro.',
+          'Season with salt. Taste and adjust.',
+          'Serve immediately with tortilla chips.',
+        ]
+      },
+      {
+        id: 10, emoji: '🍲', title: 'Vegetable Curry',
+        category: 'Dinner', time: '40 min', userAdded: false,
+        description: 'Aromatic Indian-spiced curry packed with colourful vegetables.',
+        ingredients: ['1 can chickpeas','1 can coconut milk','2 potatoes','1 bell pepper','1 onion','3 garlic cloves','1 tbsp ginger','2 tbsp curry powder','1 tsp turmeric','400g canned tomatoes','rice to serve'],
+        steps: [
+          'Dice onion, garlic, and ginger. Cook in oil over medium heat until soft.',
+          'Add curry powder and turmeric, stir for 1 minute.',
+          'Add cubed potatoes and coat in spices.',
+          'Pour in canned tomatoes and coconut milk. Stir well.',
+          'Simmer 20 minutes until potatoes are tender.',
+          'Add chickpeas and bell pepper, cook 5 more minutes.',
+          'Season and serve over rice.',
+        ]
+      },
+    ];
+
+    const CATEGORIES = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Snack'];
+    const EMOJIS = ['🍳','🥘','🍝','🍜','🍲','🥗','🍱','🌮','🥙','🍕','🥞','🧁','🍰','🍪','🫐','🥑','🍛','🍣','🍜','🥩'];
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────────
+    function loadFromStorage(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+    }
+    function saveToStorage(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+    }
+
+    // ─── Components ───────────────────────────────────────────────────────────────
+
+    function FavBtn({ isFav, onToggle, large }) {
+      return (
+        <button
+          className={large ? 'detail-fav-btn' : 'fav-btn'}
+          onClick={e => { e.stopPropagation(); onToggle(); }}
+          title={isFav ? 'Remove from favorites' : 'Save to favorites'}
+        >
+          {isFav ? '❤️' : '🤍'}
+        </button>
+      );
+    }
+
+    function RecipeCard({ recipe, isFav, onToggleFav, onClick, onDelete }) {
+      return (
+        <div className="recipe-card" onClick={onClick}>
+          <div className="card-img">{recipe.emoji}</div>
+          <div className="card-body">
+            <div className="card-title">{recipe.title}</div>
+            <div className="card-meta">
+              <span className="badge badge-category">{recipe.category}</span>
+              <span className="badge badge-time">⏱ {recipe.time}</span>
+              {recipe.userAdded && <span className="badge badge-user">My Recipe</span>}
+            </div>
+            <div className="card-desc">{recipe.description}</div>
+          </div>
+          <div className="card-footer">
+            <span className="ingredient-count">{recipe.ingredients.length} ingredients</span>
+            <div style={{display:'flex', alignItems:'center', gap:8}}>
+              {recipe.userAdded && (
+                <button className="delete-btn" onClick={e => { e.stopPropagation(); onDelete(recipe.id); }}>
+                  Delete
+                </button>
+              )}
+              <FavBtn isFav={isFav} onToggle={onToggleFav} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function RecipeDetail({ recipe, isFav, onToggleFav, onBack }) {
+      return (
+        <div>
+          <button className="back-btn" onClick={onBack}>← Back to recipes</button>
+          <div className="detail-card">
+            <div className="detail-hero">
+              <span>{recipe.emoji}</span>
+              <FavBtn isFav={isFav} onToggle={onToggleFav} large />
+            </div>
+            <div className="detail-body">
+              <div className="detail-title">{recipe.title}</div>
+              <div className="detail-meta">
+                <span className="badge badge-category">{recipe.category}</span>
+                <span className="badge badge-time">⏱ {recipe.time}</span>
+                {recipe.userAdded && <span className="badge badge-user">My Recipe</span>}
+              </div>
+              <p style={{color:'#555', lineHeight:1.7, marginBottom:20}}>{recipe.description}</p>
+
+              <div className="detail-section">
+                <h3>Ingredients</h3>
+                <ul className="ingredients-list">
+                  {recipe.ingredients.map((ing, i) => <li key={i}>{ing}</li>)}
+                </ul>
+              </div>
+
+              <div className="detail-section">
+                <h3>Instructions</h3>
+                <ol className="steps-list">
+                  {recipe.steps.map((step, i) => (
+                    <li key={i} className="step-item">
+                      <span className="step-num">{i + 1}</span>
+                      <span className="step-text">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function AddRecipeForm({ onAdd, onCancel }) {
+      const [form, setForm] = useState({
+        title: '', category: 'Dinner', time: '', description: '',
+        ingredientsRaw: '', stepsRaw: '', emoji: '🍳',
+      });
+      const [error, setError] = useState('');
+
+      const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        if (!form.title.trim() || !form.ingredientsRaw.trim() || !form.stepsRaw.trim()) {
+          setError('Please fill in title, ingredients, and steps.');
+          return;
+        }
+        const ingredients = form.ingredientsRaw.split('\n').map(s => s.trim()).filter(Boolean);
+        const steps = form.stepsRaw.split('\n').map(s => s.trim()).filter(Boolean);
+        onAdd({
+          id: Date.now(),
+          emoji: form.emoji,
+          title: form.title.trim(),
+          category: form.category,
+          time: form.time.trim() || '?',
+          description: form.description.trim() || 'A delicious homemade recipe.',
+          ingredients,
+          steps,
+          userAdded: true,
+        });
+      }
+
+      return (
+        <div>
+          <div className="view-title">Add a Recipe</div>
+          <form className="form-card" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Choose an Emoji</label>
+              <div className="emoji-picker">
+                {EMOJIS.map(em => (
+                  <span key={em} className={`emoji-opt${form.emoji === em ? ' selected' : ''}`}
+                    onClick={() => set('emoji', em)}>{em}</span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
+              <div className="form-group">
+                <label>Recipe Title *</label>
+                <input className="form-input" value={form.title} onChange={e => set('title', e.target.value)} placeholder="e.g. Garlic Butter Shrimp" />
+              </div>
+              <div className="form-group">
+                <label>Category</label>
+                <select className="form-select-full" value={form.category} onChange={e => set('category', e.target.value)}>
+                  {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div style={{display:'grid', gridTemplateColumns:'1fr 2fr', gap:16}}>
+              <div className="form-group">
+                <label>Cook Time</label>
+                <input className="form-input" value={form.time} onChange={e => set('time', e.target.value)} placeholder="e.g. 30 min" />
+              </div>
+              <div className="form-group">
+                <label>Short Description</label>
+                <input className="form-input" value={form.description} onChange={e => set('description', e.target.value)} placeholder="One sentence about the dish" />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Ingredients *</label>
+              <textarea className="form-textarea" rows={5} value={form.ingredientsRaw}
+                onChange={e => set('ingredientsRaw', e.target.value)}
+                placeholder={"One ingredient per line:\n2 cups flour\n1 tsp salt\n3 eggs"} />
+              <p className="form-hint">One ingredient per line</p>
+            </div>
+
+            <div className="form-group">
+              <label>Steps *</label>
+              <textarea className="form-textarea" rows={6} value={form.stepsRaw}
+                onChange={e => set('stepsRaw', e.target.value)}
+                placeholder={"One step per line:\nPreheat oven to 180°C\nMix dry ingredients\n..."} />
+              <p className="form-hint">One step per line</p>
+            </div>
+
+            {error && <p style={{color:'#e57373', marginBottom:12, fontSize:'0.9rem'}}>{error}</p>}
+
+            <div className="form-actions">
+              <button type="submit" className="btn-primary">Save Recipe</button>
+              <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+    // ─── Landing Page ─────────────────────────────────────────────────────────────
+    function LandingPage({ onEnter }) {
+      return (
+        <div className="landing">
+          <div className="landing-hero">
+            <div className="landing-logo">🥄 Spoonful</div>
+            <h1 className="landing-slogan">
+              You can find all your recipe needs here,<br />
+              one spoonful at a time.
+            </h1>
+            <p className="landing-description">
+              Spoonful is a platform where users can look or add recipies. We make it easy
+              for our users to find recipes of all kinds, whether you need an idea for a
+              quick meal after a busy day or want to try a new cuisine. Download our app
+              to get started on new recipes today!
+            </p>
+            <button className="landing-cta" onClick={onEnter}>
+              Browse Recipes →
+            </button>
+          </div>
+
+          <div className="landing-features">
+            <div className="landing-feature">
+              <span className="feature-icon">🔍</span>
+              <h3>Search & Filter</h3>
+              <p>Find recipes by name, ingredient, or category in seconds.</p>
+            </div>
+            <div className="landing-feature">
+              <span className="feature-icon">❤️</span>
+              <h3>Save Favorites</h3>
+              <p>Bookmark your go-to recipes and access them anytime.</p>
+            </div>
+            <div className="landing-feature">
+              <span className="feature-icon">✍️</span>
+              <h3>Add Your Own</h3>
+              <p>Share your personal recipes and build your own collection.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── Main App ─────────────────────────────────────────────────────────────────
+    function App() {
+      const [userRecipes, setUserRecipes] = useState(() => loadFromStorage('rb_userRecipes', []));
+      const [favorites, setFavorites] = useState(() => loadFromStorage('rb_favorites', []));
+      const [view, setView] = useState('landing'); // 'landing' | 'browse' | 'favorites' | 'add' | 'detail'
+      const [selectedId, setSelectedId] = useState(null);
+      const [search, setSearch] = useState('');
+      const [category, setCategory] = useState('All');
+
+      useEffect(() => saveToStorage('rb_userRecipes', userRecipes), [userRecipes]);
+      useEffect(() => saveToStorage('rb_favorites', favorites), [favorites]);
+
+      const allRecipes = [...SEED_RECIPES, ...userRecipes];
+
+      function toggleFav(id) {
+        setFavorites(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
+      }
+
+      function addRecipe(recipe) {
+        setUserRecipes(r => [...r, recipe]);
+        setView('browse');
+      }
+
+      function deleteRecipe(id) {
+        setUserRecipes(r => r.filter(x => x.id !== id));
+        setFavorites(f => f.filter(x => x !== id));
+      }
+
+      function filterRecipes(list) {
+        const q = search.toLowerCase();
+        return list.filter(r => {
+          const matchCategory = category === 'All' || r.category === category;
+          const matchSearch = !q ||
+            r.title.toLowerCase().includes(q) ||
+            r.description.toLowerCase().includes(q) ||
+            r.ingredients.some(i => i.toLowerCase().includes(q)) ||
+            r.category.toLowerCase().includes(q);
+          return matchCategory && matchSearch;
+        });
+      }
+
+      const browseList = filterRecipes(allRecipes);
+      const favList = filterRecipes(allRecipes.filter(r => favorites.includes(r.id)));
+      const selectedRecipe = allRecipes.find(r => r.id === selectedId);
+
+      function openDetail(id) { setSelectedId(id); setView('detail'); }
+
+      if (view === 'landing') {
+        return <LandingPage onEnter={() => setView('browse')} />;
+      }
+
+      if (view === 'detail' && selectedRecipe) {
+        return (
+          <>
+            <Header view={view} setView={setView} />
+            <div className="page">
+              <RecipeDetail
+                recipe={selectedRecipe}
+                isFav={favorites.includes(selectedRecipe.id)}
+                onToggleFav={() => toggleFav(selectedRecipe.id)}
+                onBack={() => setView('browse')}
+              />
+            </div>
+          </>
+        );
+      }
+
+      if (view === 'add') {
+        return (
+          <>
+            <Header view={view} setView={setView} />
+            <div className="page">
+              <AddRecipeForm onAdd={addRecipe} onCancel={() => setView('browse')} />
+            </div>
+          </>
+        );
+      }
+
+      const displayList = view === 'favorites' ? favList : browseList;
+      const viewTitle = view === 'favorites'
+        ? `Saved Favorites (${favorites.length})`
+        : 'Browse Recipes';
+
+      return (
+        <>
+          <Header view={view} setView={setView} />
+          <div className="page">
+            <div className="view-title">{viewTitle}</div>
+            <div className="filter-bar">
+              <input
+                className="search-input"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search by name, ingredient, or category..."
+              />
+              <select className="filter-select" value={category} onChange={e => setCategory(e.target.value)}>
+                {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+              </select>
+              {(search || category !== 'All') && (
+                <button className="clear-btn" onClick={() => { setSearch(''); setCategory('All'); }}>
+                  Clear filters
+                </button>
+              )}
+            </div>
+
+            <div className="stats-row">
+              <span className="pill">{displayList.length} recipe{displayList.length !== 1 ? 's' : ''}</span>
+              {view === 'browse' && userRecipes.length > 0 && (
+                <span style={{color:'#aaa'}}>including {userRecipes.length} of your own</span>
+              )}
+            </div>
+
+            {displayList.length === 0 ? (
+              <div className="empty-state">
+                <div className="emoji">{view === 'favorites' ? '❤️' : '🔍'}</div>
+                <p>{view === 'favorites'
+                  ? 'No favorites yet — heart a recipe to save it here.'
+                  : 'No recipes match your search.'}</p>
+              </div>
+            ) : (
+              <div className="recipe-grid">
+                {displayList.map(r => (
+                  <RecipeCard
+                    key={r.id}
+                    recipe={r}
+                    isFav={favorites.includes(r.id)}
+                    onToggleFav={() => toggleFav(r.id)}
+                    onClick={() => openDetail(r.id)}
+                    onDelete={deleteRecipe}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      );
+    }
+
+    function Header({ view, setView }) {
+      return (
+        <header className="header">
+          <div className="header-logo" onClick={() => setView('landing')}>
+            🥄 Spoonful
+          </div>
+          <nav className="header-nav">
+            <button className={`header-btn${view === 'browse' || view === 'detail' ? ' active' : ''}`}
+              onClick={() => setView('browse')}>Browse</button>
+            <button className={`header-btn${view === 'favorites' ? ' active' : ''}`}
+              onClick={() => setView('favorites')}>❤ Favorites</button>
+            <button className={`header-btn${view === 'add' ? ' active' : ''}`}
+              onClick={() => setView('add')}>+ Add Recipe</button>
+          </nav>
+        </header>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
