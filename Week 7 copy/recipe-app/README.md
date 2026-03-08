@@ -1,3 +1,0 @@
-# Spoonful
-
-The plan for this project is to create an app for recipie collection. The app would have features such as browse recipes, save favorites locally, add your own recipes, search and filter by ingredient or category. Another feature that I want the app to have is a feature where users can upload videos/images from other platforms such as TikTok or Instagram. This feature would allow users to save the links they upload in a private collection to be used in the future. As for the style and look of the app, I haven't decided fully but I am leaning towards a more minimal look. When scrolling though the platform, the recipes would be in a grid form with the image, name of the dish and estimated time of completion.
