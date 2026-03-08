@@ -161,6 +161,18 @@
 
     const CATEGORIES = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Snack'];
     const EMOJIS = ['🍳','🥘','🍝','🍜','🍲','🥗','🍱','🌮','🥙','🍕','🥞','🧁','🍰','🍪','🫐','🥑','🍛','🍣','🍜','🥩'];
+    const CUISINES = ['American','Chinese','French','Greek','Indian','Italian','Japanese','Korean','Mediterranean','Mexican','Middle Eastern','Spanish','Thai','Vietnamese','Other'];
+    const PLATFORM_ICONS = { TikTok: '🎵', Instagram: '📸', YouTube: '▶️', Pinterest: '📌', Web: '🌐' };
+
+    function detectPlatform(url) {
+      if (!url) return 'Web';
+      const u = url.toLowerCase();
+      if (u.includes('tiktok.com')) return 'TikTok';
+      if (u.includes('instagram.com')) return 'Instagram';
+      if (u.includes('youtube.com') || u.includes('youtu.be')) return 'YouTube';
+      if (u.includes('pinterest.com')) return 'Pinterest';
+      return 'Web';
+    }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────────
     function loadFromStorage(key, fallback) {
@@ -187,7 +199,11 @@
     function RecipeCard({ recipe, isFav, onToggleFav, onClick, onDelete }) {
       return (
         <div className="recipe-card" onClick={onClick}>
-          <div className="card-img">{recipe.emoji}</div>
+          <div className="card-img" style={recipe.photoUrl ? {padding:0,overflow:'hidden'} : {}}>
+            {recipe.photoUrl
+              ? <img src={recipe.photoUrl} alt={recipe.title} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+              : recipe.emoji}
+          </div>
           <div className="card-body">
             <div className="card-title">{recipe.title}</div>
             <div className="card-meta">
@@ -212,13 +228,20 @@
       );
     }
 
-    function RecipeDetail({ recipe, isFav, onToggleFav, onBack }) {
+    function RecipeDetail({ recipe, isFav, onToggleFav, onBack, onEdit }) {
       return (
         <div>
-          <button className="back-btn" onClick={onBack}>← Back to recipes</button>
+          <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20}}>
+            <button className="back-btn" onClick={onBack} style={{marginBottom:0}}>← Back to recipes</button>
+            {recipe.userAdded && (
+              <button className="btn-edit" onClick={onEdit}>✏️ Edit Recipe</button>
+            )}
+          </div>
           <div className="detail-card">
-            <div className="detail-hero">
-              <span>{recipe.emoji}</span>
+            <div className="detail-hero" style={recipe.photoUrl ? {padding:0,overflow:'hidden'} : {}}>
+              {recipe.photoUrl
+                ? <img src={recipe.photoUrl} alt={recipe.title} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                : <span>{recipe.emoji}</span>}
               <FavBtn isFav={isFav} onToggle={onToggleFav} large />
             </div>
             <div className="detail-body">
@@ -259,9 +282,19 @@
         title: '', category: 'Dinner', time: '', description: '',
         ingredientsRaw: '', stepsRaw: '', emoji: '🍳',
       });
+      const [photoMode, setPhotoMode] = useState('emoji'); // 'emoji' | 'photo'
+      const [photoUrl, setPhotoUrl] = useState(null);
       const [error, setError] = useState('');
 
       const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
+
+      function handlePhotoChange(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => setPhotoUrl(ev.target.result);
+        reader.readAsDataURL(file);
+      }
 
       function handleSubmit(e) {
         e.preventDefault();
@@ -274,6 +307,7 @@
         onAdd({
           id: Date.now(),
           emoji: form.emoji,
+          photoUrl: photoMode === 'photo' ? photoUrl : null,
           title: form.title.trim(),
           category: form.category,
           time: form.time.trim() || '?',
@@ -289,13 +323,46 @@
           <div className="view-title">Add a Recipe</div>
           <form className="form-card" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Choose an Emoji</label>
-              <div className="emoji-picker">
-                {EMOJIS.map(em => (
-                  <span key={em} className={`emoji-opt${form.emoji === em ? ' selected' : ''}`}
-                    onClick={() => set('emoji', em)}>{em}</span>
-                ))}
+              <label>Recipe Image</label>
+              <div className="photo-mode-toggle">
+                <button type="button"
+                  className={`photo-mode-btn${photoMode === 'emoji' ? ' active' : ''}`}
+                  onClick={() => setPhotoMode('emoji')}>
+                  😊 Choose Emoji
+                </button>
+                <button type="button"
+                  className={`photo-mode-btn${photoMode === 'photo' ? ' active' : ''}`}
+                  onClick={() => setPhotoMode('photo')}>
+                  📷 Upload Photo
+                </button>
               </div>
+
+              {photoMode === 'emoji' ? (
+                <div className="emoji-picker">
+                  {EMOJIS.map(em => (
+                    <span key={em} className={`emoji-opt${form.emoji === em ? ' selected' : ''}`}
+                      onClick={() => set('emoji', em)}>{em}</span>
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  {photoUrl ? (
+                    <div className="photo-preview-wrap">
+                      <img src={photoUrl} alt="Preview" className="photo-preview-img" />
+                      <button type="button" className="photo-remove-btn"
+                        onClick={() => setPhotoUrl(null)}>✕ Remove photo</button>
+                    </div>
+                  ) : (
+                    <label className="photo-upload-area">
+                      <span className="photo-upload-icon">📷</span>
+                      <span className="photo-upload-text">Click to upload a photo</span>
+                      <span className="photo-upload-hint">JPG, PNG, WEBP — stored locally in your browser</span>
+                      <input type="file" accept="image/*" style={{display:'none'}}
+                        onChange={handlePhotoChange} />
+                    </label>
+                  )}
+                </div>
+              )}
             </div>
 
             <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
@@ -349,6 +416,342 @@
       );
     }
 
+    // ─── Edit Recipe Form ─────────────────────────────────────────────────────────
+    function EditRecipeForm({ recipe, onSave, onCancel }) {
+      const [form, setForm] = useState({
+        title: recipe.title,
+        category: recipe.category,
+        time: recipe.time === '?' ? '' : recipe.time,
+        description: recipe.description,
+        ingredientsRaw: recipe.ingredients.join('\n'),
+        stepsRaw: recipe.steps.join('\n'),
+        emoji: recipe.emoji || '🍳',
+      });
+      const [photoMode, setPhotoMode] = useState(recipe.photoUrl ? 'photo' : 'emoji');
+      const [photoUrl, setPhotoUrl] = useState(recipe.photoUrl || null);
+      const [error, setError] = useState('');
+      const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
+
+      function handlePhotoChange(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => setPhotoUrl(ev.target.result);
+        reader.readAsDataURL(file);
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        if (!form.title.trim() || !form.ingredientsRaw.trim() || !form.stepsRaw.trim()) {
+          setError('Please fill in title, ingredients, and steps.');
+          return;
+        }
+        onSave({
+          ...recipe,
+          emoji: form.emoji,
+          photoUrl: photoMode === 'photo' ? photoUrl : null,
+          title: form.title.trim(),
+          category: form.category,
+          time: form.time.trim() || '?',
+          description: form.description.trim() || 'A delicious homemade recipe.',
+          ingredients: form.ingredientsRaw.split('\n').map(s => s.trim()).filter(Boolean),
+          steps: form.stepsRaw.split('\n').map(s => s.trim()).filter(Boolean),
+        });
+      }
+
+      return (
+        <div>
+          <div className="view-title">Edit Recipe</div>
+          <form className="form-card" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Recipe Image</label>
+              <div className="photo-mode-toggle">
+                <button type="button" className={`photo-mode-btn${photoMode === 'emoji' ? ' active' : ''}`}
+                  onClick={() => setPhotoMode('emoji')}>😊 Choose Emoji</button>
+                <button type="button" className={`photo-mode-btn${photoMode === 'photo' ? ' active' : ''}`}
+                  onClick={() => setPhotoMode('photo')}>📷 Upload Photo</button>
+              </div>
+              {photoMode === 'emoji' ? (
+                <div className="emoji-picker">
+                  {EMOJIS.map(em => (
+                    <span key={em} className={`emoji-opt${form.emoji === em ? ' selected' : ''}`}
+                      onClick={() => set('emoji', em)}>{em}</span>
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  {photoUrl ? (
+                    <div className="photo-preview-wrap">
+                      <img src={photoUrl} alt="Preview" className="photo-preview-img" />
+                      <button type="button" className="photo-remove-btn" onClick={() => setPhotoUrl(null)}>✕ Remove photo</button>
+                    </div>
+                  ) : (
+                    <label className="photo-upload-area">
+                      <span className="photo-upload-icon">📷</span>
+                      <span className="photo-upload-text">Click to upload a photo</span>
+                      <span className="photo-upload-hint">JPG, PNG, WEBP — stored locally in your browser</span>
+                      <input type="file" accept="image/*" style={{display:'none'}} onChange={handlePhotoChange} />
+                    </label>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
+              <div className="form-group">
+                <label>Recipe Title *</label>
+                <input className="form-input" value={form.title} onChange={e => set('title', e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label>Category</label>
+                <select className="form-select-full" value={form.category} onChange={e => set('category', e.target.value)}>
+                  {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div style={{display:'grid', gridTemplateColumns:'1fr 2fr', gap:16}}>
+              <div className="form-group">
+                <label>Cook Time</label>
+                <input className="form-input" value={form.time} onChange={e => set('time', e.target.value)} placeholder="e.g. 30 min" />
+              </div>
+              <div className="form-group">
+                <label>Short Description</label>
+                <input className="form-input" value={form.description} onChange={e => set('description', e.target.value)} />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Ingredients *</label>
+              <textarea className="form-textarea" rows={5} value={form.ingredientsRaw}
+                onChange={e => set('ingredientsRaw', e.target.value)} />
+              <p className="form-hint">One ingredient per line</p>
+            </div>
+
+            <div className="form-group">
+              <label>Steps *</label>
+              <textarea className="form-textarea" rows={6} value={form.stepsRaw}
+                onChange={e => set('stepsRaw', e.target.value)} />
+              <p className="form-hint">One step per line</p>
+            </div>
+
+            {error && <p style={{color:'#e57373', marginBottom:12, fontSize:'.9rem'}}>{error}</p>}
+            <div className="form-actions">
+              <button type="submit" className="btn-primary">Save Changes</button>
+              <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+    // ─── Edit Link Form ───────────────────────────────────────────────────────────
+    function EditLinkForm({ recipe, onSave, onCancel }) {
+      const [form, setForm] = useState({
+        title: recipe.title, url: recipe.url, cuisine: recipe.cuisine, notes: recipe.notes || '',
+      });
+      const [error, setError] = useState('');
+      const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
+      const platform = detectPlatform(form.url);
+      const icon = PLATFORM_ICONS[platform] || '🔗';
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        if (!form.title.trim()) { setError('Please enter a recipe name.'); return; }
+        if (!form.url.trim()) { setError('Please enter a link.'); return; }
+        onSave({ ...recipe, title: form.title.trim(), url: form.url.trim(), cuisine: form.cuisine, notes: form.notes.trim(), platform });
+      }
+
+      return (
+        <div>
+          <div className="view-title">Edit Saved Link</div>
+          <form className="form-card" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Recipe Name *</label>
+              <input className="form-input" value={form.title} onChange={e => set('title', e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label>Recipe Link *</label>
+              <input className="form-input" type="url" value={form.url} onChange={e => set('url', e.target.value)} />
+              {form.url && <div className="platform-detect">{icon} Detected: {platform}</div>}
+            </div>
+            <div className="form-group">
+              <label>Cuisine</label>
+              <select className="form-select-full" value={form.cuisine} onChange={e => set('cuisine', e.target.value)}>
+                {CUISINES.map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Notes</label>
+              <textarea className="form-textarea" rows={6} value={form.notes}
+                onChange={e => set('notes', e.target.value)}
+                placeholder="Add any personal notes, tips, or substitutions..." />
+            </div>
+            {error && <p style={{color:'#e57373', marginBottom:12, fontSize:'.9rem'}}>{error}</p>}
+            <div className="form-actions">
+              <button type="submit" className="btn-primary">Save Changes</button>
+              <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+    // ─── Link Recipe Card ─────────────────────────────────────────────────────────
+    function LinkRecipeCard({ recipe, isFav, onToggleFav, onClick, onDelete }) {
+      const icon = PLATFORM_ICONS[recipe.platform] || '🔗';
+      return (
+        <div className="recipe-card" onClick={onClick}>
+          <div className="card-img link-card-img">{icon}</div>
+          <div className="card-body">
+            <div className="card-title">{recipe.title}</div>
+            <div className="card-meta">
+              <span className="badge badge-link">🔗 {recipe.platform}</span>
+              <span className="badge badge-cuisine">{recipe.cuisine}</span>
+            </div>
+            {recipe.notes
+              ? <div className="card-desc">{recipe.notes}</div>
+              : <div className="card-desc" style={{color:'#ccc',fontStyle:'italic'}}>No notes added</div>
+            }
+          </div>
+          <div className="card-footer">
+            <span className="ingredient-count">Added {recipe.dateAdded}</span>
+            <div style={{display:'flex', alignItems:'center', gap:8}}>
+              <button className="delete-btn" onClick={e => { e.stopPropagation(); onDelete(recipe.id); }}>Delete</button>
+              <FavBtn isFav={isFav} onToggle={onToggleFav} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── Link Recipe Detail ───────────────────────────────────────────────────────
+    function LinkRecipeDetail({ recipe, isFav, onToggleFav, onBack, onEdit }) {
+      const icon = PLATFORM_ICONS[recipe.platform] || '🔗';
+      return (
+        <div>
+          <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20}}>
+            <button className="back-btn" onClick={onBack} style={{marginBottom:0}}>← Back to recipes</button>
+            <button className="btn-edit" onClick={onEdit}>✏️ Edit Link</button>
+          </div>
+          <div className="detail-card">
+            <div className="detail-hero link-detail-hero">
+              <span style={{fontSize:'5rem'}}>{icon}</span>
+              <FavBtn isFav={isFav} onToggle={onToggleFav} large />
+            </div>
+            <div className="detail-body">
+              <div className="detail-title">{recipe.title}</div>
+              <div className="detail-meta">
+                <span className="badge badge-link">🔗 {recipe.platform}</span>
+                <span className="badge badge-cuisine">{recipe.cuisine}</span>
+                <span className="date-added">Added {recipe.dateAdded}</span>
+              </div>
+
+              <div className="detail-section">
+                <h3>Recipe Link</h3>
+                <a href={recipe.url} target="_blank" rel="noopener noreferrer" className="recipe-link-btn">
+                  Open on {recipe.platform} →
+                </a>
+                <p style={{marginTop:10, fontSize:'.8rem', color:'#bbb', wordBreak:'break-all'}}>{recipe.url}</p>
+              </div>
+
+              {recipe.notes && (
+                <div className="detail-section">
+                  <h3>Notes</h3>
+                  <div className="recipe-notes">{recipe.notes}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── Save Link Form ───────────────────────────────────────────────────────────
+    function SaveLinkForm({ onAdd, onCancel }) {
+      const [form, setForm] = useState({ title: '', url: '', cuisine: 'Italian', notes: '' });
+      const [error, setError] = useState('');
+      const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
+
+      const platform = detectPlatform(form.url);
+      const icon = PLATFORM_ICONS[platform] || '🔗';
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        if (!form.title.trim()) { setError('Please enter a recipe name.'); return; }
+        if (!form.url.trim()) { setError('Please enter a link.'); return; }
+        onAdd({
+          id: Date.now(),
+          title: form.title.trim(),
+          url: form.url.trim(),
+          cuisine: form.cuisine,
+          notes: form.notes.trim(),
+          platform,
+          isLink: true,
+          dateAdded: new Date().toLocaleDateString(),
+        });
+      }
+
+      return (
+        <div>
+          <div className="view-title">Save a Recipe Link</div>
+          <p className="view-subtitle">Found a recipe on TikTok, Instagram, or YouTube? Save it here with your own notes.</p>
+          <form className="form-card" onSubmit={handleSubmit}>
+
+            <div className="form-group">
+              <label>Recipe Name *</label>
+              <input
+                className="form-input"
+                value={form.title}
+                onChange={e => set('title', e.target.value)}
+                placeholder="e.g. Viral TikTok Pasta"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Recipe Link *</label>
+              <input
+                className="form-input"
+                type="url"
+                value={form.url}
+                onChange={e => set('url', e.target.value)}
+                placeholder="Paste a TikTok, Instagram, YouTube, or other link..."
+              />
+              {form.url && (
+                <div className="platform-detect">{icon} Detected: {platform}</div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>Cuisine</label>
+              <select className="form-select-full" value={form.cuisine} onChange={e => set('cuisine', e.target.value)}>
+                {CUISINES.map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Notes</label>
+              <textarea
+                className="form-textarea"
+                rows={6}
+                value={form.notes}
+                onChange={e => set('notes', e.target.value)}
+                placeholder={"Add any personal notes, tips, substitutions, or reminders...\n\nE.g. Use oat milk instead of cream, double the garlic, bake at 180°C..."}
+              />
+              <p className="form-hint">Notes are just for you — write anything helpful</p>
+            </div>
+
+            {error && <p style={{color:'#e57373', marginBottom:12, fontSize:'.9rem'}}>{error}</p>}
+
+            <div className="form-actions">
+              <button type="submit" className="btn-primary">Save Link</button>
+              <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
     // ─── Landing Page ─────────────────────────────────────────────────────────────
     function LandingPage({ onEnter }) {
       return (
@@ -394,16 +797,18 @@
     // ─── Main App ─────────────────────────────────────────────────────────────────
     function App() {
       const [userRecipes, setUserRecipes] = useState(() => loadFromStorage('rb_userRecipes', []));
+      const [linkRecipes, setLinkRecipes] = useState(() => loadFromStorage('rb_linkRecipes', []));
       const [favorites, setFavorites] = useState(() => loadFromStorage('rb_favorites', []));
-      const [view, setView] = useState('landing'); // 'landing' | 'browse' | 'favorites' | 'add' | 'detail'
+      const [view, setView] = useState('landing'); // 'landing' | 'browse' | 'favorites' | 'add' | 'savelink' | 'detail' | 'edit' | 'editlink'
       const [selectedId, setSelectedId] = useState(null);
       const [search, setSearch] = useState('');
       const [category, setCategory] = useState('All');
 
       useEffect(() => saveToStorage('rb_userRecipes', userRecipes), [userRecipes]);
+      useEffect(() => saveToStorage('rb_linkRecipes', linkRecipes), [linkRecipes]);
       useEffect(() => saveToStorage('rb_favorites', favorites), [favorites]);
 
-      const allRecipes = [...SEED_RECIPES, ...userRecipes];
+      const allRecipes = [...SEED_RECIPES, ...userRecipes, ...linkRecipes];
 
       function toggleFav(id) {
         setFavorites(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
@@ -419,9 +824,38 @@
         setFavorites(f => f.filter(x => x !== id));
       }
 
+      function editRecipe(updated) {
+        setUserRecipes(r => r.map(x => x.id === updated.id ? updated : x));
+        setView('detail');
+      }
+
+      function addLinkRecipe(recipe) {
+        setLinkRecipes(r => [...r, recipe]);
+        setView('browse');
+      }
+
+      function deleteLinkRecipe(id) {
+        setLinkRecipes(r => r.filter(x => x.id !== id));
+        setFavorites(f => f.filter(x => x !== id));
+      }
+
+      function editLinkRecipe(updated) {
+        setLinkRecipes(r => r.map(x => x.id === updated.id ? updated : x));
+        setView('detail');
+      }
+
       function filterRecipes(list) {
         const q = search.toLowerCase();
         return list.filter(r => {
+          if (r.isLink) {
+            // Link recipes only show when category filter is 'All'
+            if (category !== 'All') return false;
+            return !q ||
+              r.title.toLowerCase().includes(q) ||
+              r.cuisine.toLowerCase().includes(q) ||
+              r.platform.toLowerCase().includes(q) ||
+              (r.notes && r.notes.toLowerCase().includes(q));
+          }
           const matchCategory = category === 'All' || r.category === category;
           const matchSearch = !q ||
             r.title.toLowerCase().includes(q) ||
@@ -447,12 +881,23 @@
           <>
             <Header view={view} setView={setView} />
             <div className="page">
-              <RecipeDetail
-                recipe={selectedRecipe}
-                isFav={favorites.includes(selectedRecipe.id)}
-                onToggleFav={() => toggleFav(selectedRecipe.id)}
-                onBack={() => setView('browse')}
-              />
+              {selectedRecipe.isLink ? (
+                <LinkRecipeDetail
+                  recipe={selectedRecipe}
+                  isFav={favorites.includes(selectedRecipe.id)}
+                  onToggleFav={() => toggleFav(selectedRecipe.id)}
+                  onBack={() => setView('browse')}
+                  onEdit={() => setView('editlink')}
+                />
+              ) : (
+                <RecipeDetail
+                  recipe={selectedRecipe}
+                  isFav={favorites.includes(selectedRecipe.id)}
+                  onToggleFav={() => toggleFav(selectedRecipe.id)}
+                  onBack={() => setView('browse')}
+                  onEdit={() => setView('edit')}
+                />
+              )}
             </div>
           </>
         );
@@ -464,6 +909,47 @@
             <Header view={view} setView={setView} />
             <div className="page">
               <AddRecipeForm onAdd={addRecipe} onCancel={() => setView('browse')} />
+            </div>
+          </>
+        );
+      }
+
+      if (view === 'savelink') {
+        return (
+          <>
+            <Header view={view} setView={setView} />
+            <div className="page">
+              <SaveLinkForm onAdd={addLinkRecipe} onCancel={() => setView('browse')} />
+            </div>
+          </>
+        );
+      }
+
+      if (view === 'edit' && selectedRecipe && selectedRecipe.userAdded) {
+        return (
+          <>
+            <Header view={view} setView={setView} />
+            <div className="page">
+              <EditRecipeForm
+                recipe={selectedRecipe}
+                onSave={editRecipe}
+                onCancel={() => setView('detail')}
+              />
+            </div>
+          </>
+        );
+      }
+
+      if (view === 'editlink' && selectedRecipe && selectedRecipe.isLink) {
+        return (
+          <>
+            <Header view={view} setView={setView} />
+            <div className="page">
+              <EditLinkForm
+                recipe={selectedRecipe}
+                onSave={editLinkRecipe}
+                onCancel={() => setView('detail')}
+              />
             </div>
           </>
         );
@@ -498,8 +984,10 @@
 
             <div className="stats-row">
               <span className="pill">{displayList.length} recipe{displayList.length !== 1 ? 's' : ''}</span>
-              {view === 'browse' && userRecipes.length > 0 && (
-                <span style={{color:'#aaa'}}>including {userRecipes.length} of your own</span>
+              {view === 'browse' && (userRecipes.length > 0 || linkRecipes.length > 0) && (
+                <span style={{color:'#aaa'}}>
+                  {[userRecipes.length > 0 && `${userRecipes.length} homemade`, linkRecipes.length > 0 && `${linkRecipes.length} saved link${linkRecipes.length !== 1 ? 's' : ''}`].filter(Boolean).join(' · ')} included
+                </span>
               )}
             </div>
 
@@ -513,14 +1001,25 @@
             ) : (
               <div className="recipe-grid">
                 {displayList.map(r => (
-                  <RecipeCard
-                    key={r.id}
-                    recipe={r}
-                    isFav={favorites.includes(r.id)}
-                    onToggleFav={() => toggleFav(r.id)}
-                    onClick={() => openDetail(r.id)}
-                    onDelete={deleteRecipe}
-                  />
+                  r.isLink ? (
+                    <LinkRecipeCard
+                      key={r.id}
+                      recipe={r}
+                      isFav={favorites.includes(r.id)}
+                      onToggleFav={() => toggleFav(r.id)}
+                      onClick={() => openDetail(r.id)}
+                      onDelete={deleteLinkRecipe}
+                    />
+                  ) : (
+                    <RecipeCard
+                      key={r.id}
+                      recipe={r}
+                      isFav={favorites.includes(r.id)}
+                      onToggleFav={() => toggleFav(r.id)}
+                      onClick={() => openDetail(r.id)}
+                      onDelete={deleteRecipe}
+                    />
+                  )
                 ))}
               </div>
             )}
@@ -542,6 +1041,8 @@
               onClick={() => setView('favorites')}>❤ Favorites</button>
             <button className={`header-btn${view === 'add' ? ' active' : ''}`}
               onClick={() => setView('add')}>+ Add Recipe</button>
+            <button className={`header-btn${view === 'savelink' ? ' active' : ''}`}
+              onClick={() => setView('savelink')}>🔗 Save Link</button>
           </nav>
         </header>
       );
