@@ -7,6 +7,9 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -19,6 +22,7 @@
     const SEED_RECIPES = [
       {
         id: 1, emoji: '🥞', title: 'Fluffy Buttermilk Pancakes',
+        photoUrl: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&h=400&fit=crop&auto=format',
         category: 'Breakfast', time: '20 min', userAdded: false,
         description: 'Light, airy pancakes with a golden crust and soft center.',
         ingredients: ['1 cup flour','1 cup buttermilk','1 egg','2 tbsp butter','1 tbsp sugar','1 tsp baking powder','½ tsp baking soda','pinch of salt'],
@@ -74,6 +78,7 @@
       },
       {
         id: 5, emoji: '🍜', title: 'Miso Ramen',
+        photoUrl: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&h=400&fit=crop&auto=format',
         category: 'Dinner', time: '35 min', userAdded: false,
         description: 'Warming Japanese broth with noodles, egg, and toppings.',
         ingredients: ['2 portions ramen noodles','3 tbsp white miso paste','1L chicken broth','2 soft-boiled eggs','100g mushrooms','2 spring onions','1 tbsp soy sauce','sesame oil','nori sheets'],
@@ -100,6 +105,7 @@
       },
       {
         id: 7, emoji: '🌮', title: 'Chicken Tacos',
+        photoUrl: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&h=400&fit=crop&auto=format',
         category: 'Lunch', time: '25 min', userAdded: false,
         description: 'Juicy seasoned chicken in warm tortillas with fresh toppings.',
         ingredients: ['500g chicken breast','2 tsp cumin','1 tsp paprika','1 tsp garlic powder','½ tsp chili flakes','8 small corn tortillas','avocado','lime','cilantro','sour cream','shredded cabbage'],
@@ -114,6 +120,7 @@
       },
       {
         id: 8, emoji: '🍪', title: 'Chocolate Chip Cookies',
+        photoUrl: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&h=400&fit=crop&auto=format',
         category: 'Dessert', time: '30 min', userAdded: false,
         description: 'Perfectly chewy cookies with crispy edges and gooey centres.',
         ingredients: ['225g butter','200g brown sugar','100g white sugar','2 eggs','1 tsp vanilla','350g flour','1 tsp baking soda','1 tsp salt','300g chocolate chips'],
