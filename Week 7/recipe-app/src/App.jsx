@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { SEED_RECIPES } from './data/recipes';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import Header from './components/Header';
+import LandingPage from './components/LandingPage';
 import RecipeCard from './components/RecipeCard';
 import RecipeDetail from './components/RecipeDetail';
 import AddRecipeForm from './components/AddRecipeForm';
@@ -10,7 +11,7 @@ import FilterBar from './components/FilterBar';
 export default function App() {
   const [userRecipes, setUserRecipes] = useState(() => loadFromStorage('rb_userRecipes', []));
   const [favorites, setFavorites] = useState(() => loadFromStorage('rb_favorites', []));
-  const [view, setView] = useState('browse'); // 'browse' | 'favorites' | 'add' | 'detail'
+  const [view, setView] = useState('landing'); // 'landing' | 'browse' | 'favorites' | 'add' | 'detail'
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
@@ -54,6 +55,10 @@ export default function App() {
   function openDetail(id) {
     setSelectedId(id);
     setView('detail');
+  }
+
+  if (view === 'landing') {
+    return <LandingPage onEnter={() => setView('browse')} />;
   }
 
   if (view === 'detail' && selectedRecipe) {

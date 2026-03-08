@@ -1,8 +1,8 @@
 export default function Header({ view, setView }) {
   return (
     <header className="header">
-      <div className="header-logo" onClick={() => setView('browse')}>
-        RecipeBox <span>🍳</span>
+      <div className="header-logo" onClick={() => setView('landing')}>
+        🥄 Spoonful
       </div>
       <nav className="header-nav">
         <button
