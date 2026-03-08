@@ -550,16 +550,25 @@
       const [form, setForm] = useState({
         title: recipe.title, url: recipe.url, cuisine: recipe.cuisine, notes: recipe.notes || '',
       });
+      const [photoUrl, setPhotoUrl] = useState(recipe.photoUrl || null);
       const [error, setError] = useState('');
       const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
       const platform = detectPlatform(form.url);
       const icon = PLATFORM_ICONS[platform] || '🔗';
 
+      function handlePhotoChange(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => setPhotoUrl(ev.target.result);
+        reader.readAsDataURL(file);
+      }
+
       function handleSubmit(e) {
         e.preventDefault();
         if (!form.title.trim()) { setError('Please enter a recipe name.'); return; }
         if (!form.url.trim()) { setError('Please enter a link.'); return; }
-        onSave({ ...recipe, title: form.title.trim(), url: form.url.trim(), cuisine: form.cuisine, notes: form.notes.trim(), platform });
+        onSave({ ...recipe, title: form.title.trim(), url: form.url.trim(), cuisine: form.cuisine, notes: form.notes.trim(), photoUrl, platform });
       }
 
       return (
@@ -582,6 +591,22 @@
               </select>
             </div>
             <div className="form-group">
+              <label>Photo (optional)</label>
+              {photoUrl ? (
+                <div className="photo-preview-wrap">
+                  <img src={photoUrl} alt="Preview" className="photo-preview-img" />
+                  <button type="button" className="photo-remove-btn" onClick={() => setPhotoUrl(null)}>✕ Remove photo</button>
+                </div>
+              ) : (
+                <label className="photo-upload-area">
+                  <span className="photo-upload-icon">📷</span>
+                  <span className="photo-upload-text">Click to upload a photo</span>
+                  <span className="photo-upload-hint">JPG, PNG, WEBP — stored locally in your browser</span>
+                  <input type="file" accept="image/*" style={{display:'none'}} onChange={handlePhotoChange} />
+                </label>
+              )}
+            </div>
+            <div className="form-group">
               <label>Notes</label>
               <textarea className="form-textarea" rows={6} value={form.notes}
                 onChange={e => set('notes', e.target.value)}
@@ -602,7 +627,11 @@
       const icon = PLATFORM_ICONS[recipe.platform] || '🔗';
       return (
         <div className="recipe-card" onClick={onClick}>
-          <div className="card-img link-card-img">{icon}</div>
+          <div className="card-img link-card-img" style={recipe.photoUrl ? {padding:0,overflow:'hidden'} : {}}>
+            {recipe.photoUrl
+              ? <img src={recipe.photoUrl} alt={recipe.title} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+              : icon}
+          </div>
           <div className="card-body">
             <div className="card-title">{recipe.title}</div>
             <div className="card-meta">
@@ -635,8 +664,10 @@
             <button className="btn-edit" onClick={onEdit}>✏️ Edit Link</button>
           </div>
           <div className="detail-card">
-            <div className="detail-hero link-detail-hero">
-              <span style={{fontSize:'5rem'}}>{icon}</span>
+            <div className="detail-hero link-detail-hero" style={recipe.photoUrl ? {padding:0,overflow:'hidden'} : {}}>
+              {recipe.photoUrl
+                ? <img src={recipe.photoUrl} alt={recipe.title} style={{width:'100%',height:'100%',objectFit:'cover'}} />
+                : <span style={{fontSize:'5rem'}}>{icon}</span>}
               <FavBtn isFav={isFav} onToggle={onToggleFav} large />
             </div>
             <div className="detail-body">
@@ -670,11 +701,20 @@
     // ─── Save Link Form ───────────────────────────────────────────────────────────
     function SaveLinkForm({ onAdd, onCancel }) {
       const [form, setForm] = useState({ title: '', url: '', cuisine: 'Italian', notes: '' });
+      const [photoUrl, setPhotoUrl] = useState(null);
       const [error, setError] = useState('');
       const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
 
       const platform = detectPlatform(form.url);
       const icon = PLATFORM_ICONS[platform] || '🔗';
+
+      function handlePhotoChange(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => setPhotoUrl(ev.target.result);
+        reader.readAsDataURL(file);
+      }
 
       function handleSubmit(e) {
         e.preventDefault();
@@ -686,6 +726,7 @@
           url: form.url.trim(),
           cuisine: form.cuisine,
           notes: form.notes.trim(),
+          photoUrl,
           platform,
           isLink: true,
           dateAdded: new Date().toLocaleDateString(),
@@ -700,26 +741,16 @@
 
             <div className="form-group">
               <label>Recipe Name *</label>
-              <input
-                className="form-input"
-                value={form.title}
-                onChange={e => set('title', e.target.value)}
-                placeholder="e.g. Viral TikTok Pasta"
-              />
+              <input className="form-input" value={form.title}
+                onChange={e => set('title', e.target.value)} placeholder="e.g. Viral TikTok Pasta" />
             </div>
 
             <div className="form-group">
               <label>Recipe Link *</label>
-              <input
-                className="form-input"
-                type="url"
-                value={form.url}
+              <input className="form-input" type="url" value={form.url}
                 onChange={e => set('url', e.target.value)}
-                placeholder="Paste a TikTok, Instagram, YouTube, or other link..."
-              />
-              {form.url && (
-                <div className="platform-detect">{icon} Detected: {platform}</div>
-              )}
+                placeholder="Paste a TikTok, Instagram, YouTube, or other link..." />
+              {form.url && <div className="platform-detect">{icon} Detected: {platform}</div>}
             </div>
 
             <div className="form-group">
@@ -730,19 +761,31 @@
             </div>
 
             <div className="form-group">
+              <label>Photo (optional)</label>
+              {photoUrl ? (
+                <div className="photo-preview-wrap">
+                  <img src={photoUrl} alt="Preview" className="photo-preview-img" />
+                  <button type="button" className="photo-remove-btn" onClick={() => setPhotoUrl(null)}>✕ Remove photo</button>
+                </div>
+              ) : (
+                <label className="photo-upload-area">
+                  <span className="photo-upload-icon">📷</span>
+                  <span className="photo-upload-text">Click to upload a photo</span>
+                  <span className="photo-upload-hint">JPG, PNG, WEBP — stored locally in your browser</span>
+                  <input type="file" accept="image/*" style={{display:'none'}} onChange={handlePhotoChange} />
+                </label>
+              )}
+            </div>
+
+            <div className="form-group">
               <label>Notes</label>
-              <textarea
-                className="form-textarea"
-                rows={6}
-                value={form.notes}
+              <textarea className="form-textarea" rows={6} value={form.notes}
                 onChange={e => set('notes', e.target.value)}
-                placeholder={"Add any personal notes, tips, substitutions, or reminders...\n\nE.g. Use oat milk instead of cream, double the garlic, bake at 180°C..."}
-              />
+                placeholder={"Add any personal notes, tips, substitutions, or reminders...\n\nE.g. Use oat milk instead of cream, double the garlic, bake at 180°C..."} />
               <p className="form-hint">Notes are just for you — write anything helpful</p>
             </div>
 
             {error && <p style={{color:'#e57373', marginBottom:12, fontSize:'.9rem'}}>{error}</p>}
-
             <div className="form-actions">
               <button type="submit" className="btn-primary">Save Link</button>
               <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
@@ -799,16 +842,20 @@
       const [userRecipes, setUserRecipes] = useState(() => loadFromStorage('rb_userRecipes', []));
       const [linkRecipes, setLinkRecipes] = useState(() => loadFromStorage('rb_linkRecipes', []));
       const [favorites, setFavorites] = useState(() => loadFromStorage('rb_favorites', []));
-      const [view, setView] = useState('landing'); // 'landing' | 'browse' | 'favorites' | 'add' | 'savelink' | 'detail' | 'edit' | 'editlink'
+      const [view, setView] = useState('landing'); // 'landing' | 'browse' | 'favorites' | 'add' | 'links' | 'savelink' | 'detail' | 'edit' | 'editlink'
       const [selectedId, setSelectedId] = useState(null);
+      const [prevView, setPrevView] = useState('browse'); // where detail was opened from
       const [search, setSearch] = useState('');
+      const [linkSearch, setLinkSearch] = useState('');
+      const [linkCuisine, setLinkCuisine] = useState('All');
       const [category, setCategory] = useState('All');
 
       useEffect(() => saveToStorage('rb_userRecipes', userRecipes), [userRecipes]);
       useEffect(() => saveToStorage('rb_linkRecipes', linkRecipes), [linkRecipes]);
       useEffect(() => saveToStorage('rb_favorites', favorites), [favorites]);
 
-      const allRecipes = [...SEED_RECIPES, ...userRecipes, ...linkRecipes];
+      // Link recipes are kept separate — they never appear in browse or favorites
+      const allRecipes = [...SEED_RECIPES, ...userRecipes];
 
       function toggleFav(id) {
         setFavorites(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
@@ -831,7 +878,7 @@
 
       function addLinkRecipe(recipe) {
         setLinkRecipes(r => [...r, recipe]);
-        setView('browse');
+        setView('links');
       }
 
       function deleteLinkRecipe(id) {
@@ -847,15 +894,6 @@
       function filterRecipes(list) {
         const q = search.toLowerCase();
         return list.filter(r => {
-          if (r.isLink) {
-            // Link recipes only show when category filter is 'All'
-            if (category !== 'All') return false;
-            return !q ||
-              r.title.toLowerCase().includes(q) ||
-              r.cuisine.toLowerCase().includes(q) ||
-              r.platform.toLowerCase().includes(q) ||
-              (r.notes && r.notes.toLowerCase().includes(q));
-          }
           const matchCategory = category === 'All' || r.category === category;
           const matchSearch = !q ||
             r.title.toLowerCase().includes(q) ||
@@ -866,11 +904,27 @@
         });
       }
 
+      function filterLinks(list) {
+        const q = linkSearch.toLowerCase();
+        return list.filter(r => {
+          const matchCuisine = linkCuisine === 'All' || r.cuisine === linkCuisine;
+          const matchSearch = !q ||
+            r.title.toLowerCase().includes(q) ||
+            r.cuisine.toLowerCase().includes(q) ||
+            r.platform.toLowerCase().includes(q) ||
+            (r.notes && r.notes.toLowerCase().includes(q));
+          return matchCuisine && matchSearch;
+        });
+      }
+
       const browseList = filterRecipes(allRecipes);
       const favList = filterRecipes(allRecipes.filter(r => favorites.includes(r.id)));
-      const selectedRecipe = allRecipes.find(r => r.id === selectedId);
+      const filteredLinks = filterLinks(linkRecipes);
+      // allLookup includes link recipes so detail view can find them
+      const allLookup = [...allRecipes, ...linkRecipes];
+      const selectedRecipe = allLookup.find(r => r.id === selectedId);
 
-      function openDetail(id) { setSelectedId(id); setView('detail'); }
+      function openDetail(id, from) { setSelectedId(id); setPrevView(from || 'browse'); setView('detail'); }
 
       if (view === 'landing') {
         return <LandingPage onEnter={() => setView('browse')} />;
@@ -879,14 +933,14 @@
       if (view === 'detail' && selectedRecipe) {
         return (
           <>
-            <Header view={view} setView={setView} />
+            <Header view={view} setView={setView} prevView={prevView} />
             <div className="page">
               {selectedRecipe.isLink ? (
                 <LinkRecipeDetail
                   recipe={selectedRecipe}
                   isFav={favorites.includes(selectedRecipe.id)}
                   onToggleFav={() => toggleFav(selectedRecipe.id)}
-                  onBack={() => setView('browse')}
+                  onBack={() => setView('links')}
                   onEdit={() => setView('editlink')}
                 />
               ) : (
@@ -894,7 +948,7 @@
                   recipe={selectedRecipe}
                   isFav={favorites.includes(selectedRecipe.id)}
                   onToggleFav={() => toggleFav(selectedRecipe.id)}
-                  onBack={() => setView('browse')}
+                  onBack={() => setView(prevView)}
                   onEdit={() => setView('edit')}
                 />
               )}
@@ -906,7 +960,7 @@
       if (view === 'add') {
         return (
           <>
-            <Header view={view} setView={setView} />
+            <Header view={view} setView={setView} prevView={prevView} />
             <div className="page">
               <AddRecipeForm onAdd={addRecipe} onCancel={() => setView('browse')} />
             </div>
@@ -917,9 +971,9 @@
       if (view === 'savelink') {
         return (
           <>
-            <Header view={view} setView={setView} />
+            <Header view={view} setView={setView} prevView={prevView} />
             <div className="page">
-              <SaveLinkForm onAdd={addLinkRecipe} onCancel={() => setView('browse')} />
+              <SaveLinkForm onAdd={addLinkRecipe} onCancel={() => setView('links')} />
             </div>
           </>
         );
@@ -928,7 +982,7 @@
       if (view === 'edit' && selectedRecipe && selectedRecipe.userAdded) {
         return (
           <>
-            <Header view={view} setView={setView} />
+            <Header view={view} setView={setView} prevView={prevView} />
             <div className="page">
               <EditRecipeForm
                 recipe={selectedRecipe}
@@ -943,13 +997,78 @@
       if (view === 'editlink' && selectedRecipe && selectedRecipe.isLink) {
         return (
           <>
-            <Header view={view} setView={setView} />
+            <Header view={view} setView={setView} prevView={prevView} />
             <div className="page">
               <EditLinkForm
                 recipe={selectedRecipe}
                 onSave={editLinkRecipe}
                 onCancel={() => setView('detail')}
               />
+            </div>
+          </>
+        );
+      }
+
+      if (view === 'links' || view === 'savelink') {
+        if (view === 'savelink') {
+          return (
+            <>
+              <Header view={view} setView={setView} prevView={prevView} />
+              <div className="page">
+                <SaveLinkForm onAdd={addLinkRecipe} onCancel={() => setView('links')} />
+              </div>
+            </>
+          );
+        }
+        return (
+          <>
+            <Header view={view} setView={setView} prevView={prevView} />
+            <div className="page">
+              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8}}>
+                <div className="view-title" style={{marginBottom:0}}>My Links</div>
+                <button className="btn-primary" style={{padding:'8px 18px', fontSize:'.88rem'}}
+                  onClick={() => setView('savelink')}>+ Save New Link</button>
+              </div>
+              <p className="view-subtitle">Your private collection of recipes saved from other platforms.</p>
+              <div className="filter-bar">
+                <input
+                  className="search-input"
+                  value={linkSearch}
+                  onChange={e => setLinkSearch(e.target.value)}
+                  placeholder="Search by name, cuisine, platform, or notes..."
+                />
+                <select className="filter-select" value={linkCuisine} onChange={e => setLinkCuisine(e.target.value)}>
+                  <option value="All">All Cuisines</option>
+                  {CUISINES.map(c => <option key={c}>{c}</option>)}
+                </select>
+                {(linkSearch || linkCuisine !== 'All') && (
+                  <button className="clear-btn" onClick={() => { setLinkSearch(''); setLinkCuisine('All'); }}>Clear filters</button>
+                )}
+              </div>
+              <div className="stats-row">
+                <span className="pill">{filteredLinks.length} link{filteredLinks.length !== 1 ? 's' : ''}</span>
+              </div>
+              {filteredLinks.length === 0 ? (
+                <div className="empty-state">
+                  <div className="emoji">{(linkSearch || linkCuisine !== 'All') ? '🔍' : '🔗'}</div>
+                  <p>{(linkSearch || linkCuisine !== 'All')
+                    ? 'No links match your filters.'
+                    : 'No saved links yet — save a recipe link to get started.'}</p>
+                </div>
+              ) : (
+                <div className="recipe-grid">
+                  {filteredLinks.map(r => (
+                    <LinkRecipeCard
+                      key={r.id}
+                      recipe={r}
+                      isFav={favorites.includes(r.id)}
+                      onToggleFav={() => toggleFav(r.id)}
+                      onClick={() => openDetail(r.id, 'links')}
+                      onDelete={deleteLinkRecipe}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </>
         );
@@ -962,7 +1081,7 @@
 
       return (
         <>
-          <Header view={view} setView={setView} />
+          <Header view={view} setView={setView} prevView={prevView} />
           <div className="page">
             <div className="view-title">{viewTitle}</div>
             <div className="filter-bar">
@@ -984,10 +1103,8 @@
 
             <div className="stats-row">
               <span className="pill">{displayList.length} recipe{displayList.length !== 1 ? 's' : ''}</span>
-              {view === 'browse' && (userRecipes.length > 0 || linkRecipes.length > 0) && (
-                <span style={{color:'#aaa'}}>
-                  {[userRecipes.length > 0 && `${userRecipes.length} homemade`, linkRecipes.length > 0 && `${linkRecipes.length} saved link${linkRecipes.length !== 1 ? 's' : ''}`].filter(Boolean).join(' · ')} included
-                </span>
+              {view === 'browse' && userRecipes.length > 0 && (
+                <span style={{color:'#aaa'}}>{userRecipes.length} homemade included</span>
               )}
             </div>
 
@@ -1001,25 +1118,14 @@
             ) : (
               <div className="recipe-grid">
                 {displayList.map(r => (
-                  r.isLink ? (
-                    <LinkRecipeCard
-                      key={r.id}
-                      recipe={r}
-                      isFav={favorites.includes(r.id)}
-                      onToggleFav={() => toggleFav(r.id)}
-                      onClick={() => openDetail(r.id)}
-                      onDelete={deleteLinkRecipe}
-                    />
-                  ) : (
-                    <RecipeCard
-                      key={r.id}
-                      recipe={r}
-                      isFav={favorites.includes(r.id)}
-                      onToggleFav={() => toggleFav(r.id)}
-                      onClick={() => openDetail(r.id)}
-                      onDelete={deleteRecipe}
-                    />
-                  )
+                  <RecipeCard
+                    key={r.id}
+                    recipe={r}
+                    isFav={favorites.includes(r.id)}
+                    onToggleFav={() => toggleFav(r.id)}
+                    onClick={() => openDetail(r.id, view)}
+                    onDelete={deleteRecipe}
+                  />
                 ))}
               </div>
             )}
@@ -1028,21 +1134,26 @@
       );
     }
 
-    function Header({ view, setView }) {
+    function Header({ view, setView, prevView }) {
+      const inLinks = view === 'links' || view === 'savelink' || view === 'editlink' ||
+                      (view === 'detail' && prevView === 'links');
+      const inFav   = view === 'favorites' || (view === 'detail' && prevView === 'favorites');
+      const inBrowse = view === 'browse' || view === 'add' || view === 'edit' ||
+                       (view === 'detail' && prevView === 'browse');
       return (
         <header className="header">
           <div className="header-logo" onClick={() => setView('landing')}>
             🥄 Spoonful
           </div>
           <nav className="header-nav">
-            <button className={`header-btn${view === 'browse' || view === 'detail' ? ' active' : ''}`}
+            <button className={`header-btn${inBrowse ? ' active' : ''}`}
               onClick={() => setView('browse')}>Browse</button>
-            <button className={`header-btn${view === 'favorites' ? ' active' : ''}`}
+            <button className={`header-btn${inFav ? ' active' : ''}`}
               onClick={() => setView('favorites')}>❤ Favorites</button>
             <button className={`header-btn${view === 'add' ? ' active' : ''}`}
               onClick={() => setView('add')}>+ Add Recipe</button>
-            <button className={`header-btn${view === 'savelink' ? ' active' : ''}`}
-              onClick={() => setView('savelink')}>🔗 Save Link</button>
+            <button className={`header-btn${inLinks ? ' active' : ''}`}
+              onClick={() => setView('links')}>🔗 My Links</button>
           </nav>
         </header>
       );
