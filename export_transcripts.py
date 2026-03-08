@@ -1,8 +1,10 @@
 """
 export_transcripts.py
 Exports Claude Code session transcripts for this project to:
-  - transcript_export.html   (full, styled conversation log)
-  - TRANSCRIPT-HIGHLIGHTS.md (summary of key sessions)
+  - Week 8/transcript_export.html   (full, styled conversation log)
+  - Week 8/TRANSCRIPT-HIGHLIGHTS.md (summary of key sessions)
+
+Only includes Week 8 sessions (March 8, 2026 — the Spoonful app).
 """
 
 import json
@@ -14,9 +16,10 @@ from pathlib import Path
 
 # ── Config ────────────────────────────────────────────────────────────────────
 PROJECT_DIR = Path(r"C:\Users\sarap\.claude\projects\c--Users-sarap-Documents-GitHub-Dig4503C-Low-and-No-Code")
-OUTPUT_HTML = Path(r"c:\Users\sarap\Documents\GitHub\Dig4503C-Low-and-No-Code\transcript_export.html")
-OUTPUT_MD   = Path(r"c:\Users\sarap\Documents\GitHub\Dig4503C-Low-and-No-Code\TRANSCRIPT-HIGHLIGHTS.md")
+OUTPUT_HTML = Path(r"c:\Users\sarap\Documents\GitHub\Dig4503C-Low-and-No-Code\Week 8\transcript_export.html")
+OUTPUT_MD   = Path(r"c:\Users\sarap\Documents\GitHub\Dig4503C-Low-and-No-Code\Week 8\TRANSCRIPT-HIGHLIGHTS.md")
 MIN_SIZE_KB = 5   # skip stub sessions smaller than this
+FILTER_DATE = "2026-03-08"  # only include sessions from this date (Week 8)
 
 # Tool calls we surface in the transcript
 VISIBLE_TOOLS = {"Bash", "Edit", "Write", "Read", "Glob", "Grep", "WebFetch", "WebSearch"}
