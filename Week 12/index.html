@@ -7,16 +7,154 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Supabase SDK (email/password auth) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    // 🔧 SETUP REQUIRED: Replace these placeholder values with your own Supabase project config.
+    // Find them in: Supabase Dashboard → Project Settings → API
+    const SUPABASE_URL  = 'https://joxqkgjcqfkwhfloapfp.supabase.co';       // e.g. https://xxxx.supabase.co
+    const SUPABASE_ANON = 'sb_publishable_dW2mrnDecY6ToxNC2r4awA_vjuoOELV';  // public anon key
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Auth page ────────────────────────────────────── */
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 20px;
+    }
+    .auth-card {
+      background: #1e1e2e;
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .auth-logo {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #ff8c42;
+      margin-bottom: 6px;
+    }
+    .auth-subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 28px;
+      font-size: 0.88rem;
+    }
+    .auth-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 22px;
+      text-align: center;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #2a2a3e;
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .auth-input:focus { outline: none; border-color: #ff8c42; }
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: #ff8c42;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+    .auth-btn:hover { background: #e6732e; }
+    .auth-btn:disabled { background: #555; cursor: not-allowed; }
+    .auth-error {
+      color: #e57373;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .auth-toggle {
+      text-align: center;
+      margin-top: 22px;
+      color: #777;
+      font-size: 0.88rem;
+    }
+    .auth-toggle button {
+      background: none;
+      border: none;
+      color: #ff8c42;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+      font-size: 0.88rem;
+      padding: 0;
+    }
+    .auth-toggle button:hover { text-decoration: underline; }
+    .auth-loading {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ccc;
+      font-size: 1.2rem;
+      background: #111;
+    }
+    /* ── Header user info ─────────────────────────────── */
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+    .header-email {
+      color: #aaa;
+      font-size: 0.78rem;
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .header-logout-btn {
+      background: none;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .header-logout-btn:hover { border-color: #ff8c42; color: #ff8c42; }
+  </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useCallback } = React;
+    const { useState, useEffect, useCallback, useRef } = React;
 
     // ─── Seed Data ───────────────────────────────────────────────────────────────
     const SEED_RECIPES = [
@@ -802,6 +940,100 @@
       );
     }
 
+    // ─── Login Page ───────────────────────────────────────────────────────────────
+    function LoginPage() {
+      const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [awaitingConfirm, setAwaitingConfirm] = useState(false);
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        if (mode === 'signin') {
+          const { error: err } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (err) setError(err.message);
+          // on success, onAuthStateChange in App automatically shows the main app
+        } else {
+          const { data, error: err } = await supabaseClient.auth.signUp({ email, password });
+          if (err) {
+            setError(err.message);
+          } else if (!data.session) {
+            // Email confirmation required — session is null until user clicks link
+            setAwaitingConfirm(true);
+          }
+          // if data.session exists, onAuthStateChange handles the transition
+        }
+        setLoading(false);
+      }
+
+      function switchMode(newMode) {
+        setMode(newMode);
+        setError('');
+        setAwaitingConfirm(false);
+      }
+
+      if (awaitingConfirm) {
+        return (
+          <div className="auth-page">
+            <div className="auth-card">
+              <div className="auth-logo">🥄 Spoonful</div>
+              <div className="auth-title" style={{marginBottom:16}}>Check your email</div>
+              <p style={{color:'#aaa', textAlign:'center', lineHeight:1.8, marginBottom:24}}>
+                We sent a confirmation link to<br/>
+                <strong style={{color:'#fff'}}>{email}</strong>.<br/>
+                Click it to activate your account, then sign in here.
+              </p>
+              <button className="auth-btn" onClick={() => switchMode('signin')}>Back to Sign In</button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="auth-page">
+          <div className="auth-card">
+            <div className="auth-logo">🥄 Spoonful</div>
+            <div className="auth-subtitle">Your personal recipe collection</div>
+            <div className="auth-title">{mode === 'signin' ? 'Sign In' : 'Create Account'}</div>
+            <form onSubmit={handleSubmit}>
+              <input
+                className="auth-input"
+                type="email"
+                placeholder="Email address"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+              <input
+                className="auth-input"
+                type="password"
+                placeholder="Password (min 6 characters)"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+              />
+              {error && <div className="auth-error">{error}</div>}
+              <button className="auth-btn" type="submit" disabled={loading}>
+                {loading ? 'Please wait…' : (mode === 'signin' ? 'Sign In' : 'Sign Up')}
+              </button>
+            </form>
+            <div className="auth-toggle">
+              {mode === 'signin'
+                ? <> Don't have an account? <button onClick={() => switchMode('signup')}>Sign Up</button></>
+                : <> Already have an account? <button onClick={() => switchMode('signin')}>Sign In</button></>
+              }
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     // ─── Landing Page ─────────────────────────────────────────────────────────────
     function LandingPage({ onEnter }) {
       return (
@@ -845,10 +1077,11 @@
     }
 
     // ─── Main App ─────────────────────────────────────────────────────────────────
-    function App() {
-      const [userRecipes, setUserRecipes] = useState(() => loadFromStorage('rb_userRecipes', []));
-      const [linkRecipes, setLinkRecipes] = useState(() => loadFromStorage('rb_linkRecipes', []));
-      const [favorites, setFavorites] = useState(() => loadFromStorage('rb_favorites', []));
+    function MainApp({ user }) {
+      const uid = user.id;
+      const [userRecipes, setUserRecipes] = useState(() => loadFromStorage(`rb_${uid}_userRecipes`, []));
+      const [linkRecipes, setLinkRecipes] = useState(() => loadFromStorage(`rb_${uid}_linkRecipes`, []));
+      const [favorites, setFavorites] = useState(() => loadFromStorage(`rb_${uid}_favorites`, []));
       const [view, setView] = useState('landing'); // 'landing' | 'browse' | 'favorites' | 'add' | 'links' | 'savelink' | 'detail' | 'edit' | 'editlink'
       const [selectedId, setSelectedId] = useState(null);
       const [prevView, setPrevView] = useState('browse'); // where detail was opened from
@@ -857,9 +1090,9 @@
       const [linkCuisine, setLinkCuisine] = useState('All');
       const [category, setCategory] = useState('All');
 
-      useEffect(() => saveToStorage('rb_userRecipes', userRecipes), [userRecipes]);
-      useEffect(() => saveToStorage('rb_linkRecipes', linkRecipes), [linkRecipes]);
-      useEffect(() => saveToStorage('rb_favorites', favorites), [favorites]);
+      useEffect(() => saveToStorage(`rb_${uid}_userRecipes`, userRecipes), [userRecipes]);
+      useEffect(() => saveToStorage(`rb_${uid}_linkRecipes`, linkRecipes), [linkRecipes]);
+      useEffect(() => saveToStorage(`rb_${uid}_favorites`, favorites), [favorites]);
 
       // Link recipes are kept separate — they never appear in browse or favorites
       const allRecipes = [...SEED_RECIPES, ...userRecipes];
@@ -933,14 +1166,21 @@
 
       function openDetail(id, from) { setSelectedId(id); setPrevView(from || 'browse'); setView('detail'); }
 
+      function handleLogout() { supabaseClient.auth.signOut(); }
+
       if (view === 'landing') {
-        return <LandingPage onEnter={() => setView('browse')} />;
+        return (
+          <>
+            <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
+            <LandingPage onEnter={() => setView('browse')} />
+          </>
+        );
       }
 
       if (view === 'detail' && selectedRecipe) {
         return (
           <>
-            <Header view={view} setView={setView} prevView={prevView} />
+            <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
             <div className="page">
               {selectedRecipe.isLink ? (
                 <LinkRecipeDetail
@@ -967,7 +1207,7 @@
       if (view === 'add') {
         return (
           <>
-            <Header view={view} setView={setView} prevView={prevView} />
+            <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
             <div className="page">
               <AddRecipeForm onAdd={addRecipe} onCancel={() => setView('browse')} />
             </div>
@@ -978,7 +1218,7 @@
       if (view === 'savelink') {
         return (
           <>
-            <Header view={view} setView={setView} prevView={prevView} />
+            <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
             <div className="page">
               <SaveLinkForm onAdd={addLinkRecipe} onCancel={() => setView('links')} />
             </div>
@@ -989,7 +1229,7 @@
       if (view === 'edit' && selectedRecipe && selectedRecipe.userAdded) {
         return (
           <>
-            <Header view={view} setView={setView} prevView={prevView} />
+            <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
             <div className="page">
               <EditRecipeForm
                 recipe={selectedRecipe}
@@ -1004,7 +1244,7 @@
       if (view === 'editlink' && selectedRecipe && selectedRecipe.isLink) {
         return (
           <>
-            <Header view={view} setView={setView} prevView={prevView} />
+            <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
             <div className="page">
               <EditLinkForm
                 recipe={selectedRecipe}
@@ -1020,7 +1260,7 @@
         if (view === 'savelink') {
           return (
             <>
-              <Header view={view} setView={setView} prevView={prevView} />
+              <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
               <div className="page">
                 <SaveLinkForm onAdd={addLinkRecipe} onCancel={() => setView('links')} />
               </div>
@@ -1029,7 +1269,7 @@
         }
         return (
           <>
-            <Header view={view} setView={setView} prevView={prevView} />
+            <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
             <div className="page">
               <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8}}>
                 <div className="view-title" style={{marginBottom:0}}>My Links</div>
@@ -1088,7 +1328,7 @@
 
       return (
         <>
-          <Header view={view} setView={setView} prevView={prevView} />
+          <Header view={view} setView={setView} prevView={prevView} currentUser={user} onLogout={handleLogout} />
           <div className="page">
             <div className="view-title">{viewTitle}</div>
             <div className="filter-bar">
@@ -1141,7 +1381,33 @@
       );
     }
 
-    function Header({ view, setView, prevView }) {
+    // ─── Auth Wrapper ─────────────────────────────────────────────────────────────
+    function App() {
+      const [currentUser, setCurrentUser] = useState(null);
+      const [authLoading, setAuthLoading] = useState(true);
+
+      useEffect(() => {
+        // onAuthStateChange fires immediately with INITIAL_SESSION (current session or null),
+        // then again on every sign-in / sign-out — so getSession() is not needed.
+        const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+          setCurrentUser(session?.user ?? null);
+          setAuthLoading(false);
+        });
+        return () => subscription.unsubscribe();
+      }, []);
+
+      if (authLoading) {
+        return <div className="auth-loading">🥄 Loading…</div>;
+      }
+
+      if (!currentUser) {
+        return <LoginPage />;
+      }
+
+      return <MainApp user={currentUser} />;
+    }
+
+    function Header({ view, setView, prevView, currentUser, onLogout }) {
       const inLinks = view === 'links' || view === 'savelink' || view === 'editlink' ||
                       (view === 'detail' && prevView === 'links');
       const inFav   = view === 'favorites' || (view === 'detail' && prevView === 'favorites');
@@ -1162,6 +1428,12 @@
             <button className={`header-btn${inLinks ? ' active' : ''}`}
               onClick={() => setView('links')}>🔗 My Links</button>
           </nav>
+          {currentUser && (
+            <div className="header-user">
+              <span className="header-email" title={currentUser.email}>{currentUser.email}</span>
+              <button className="header-logout-btn" onClick={onLogout}>Sign Out</button>
+            </div>
+          )}
         </header>
       );
     }
