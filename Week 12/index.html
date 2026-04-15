@@ -941,8 +941,8 @@
     }
 
     // ─── Login Page ───────────────────────────────────────────────────────────────
-    function LoginPage() {
-      const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
+    function LoginPage({ initialMode = 'signin', onBack }) {
+      const [mode, setMode] = useState(initialMode); // 'signin' | 'signup'
       const [email, setEmail] = useState('');
       const [password, setPassword] = useState('');
       const [error, setError] = useState('');
@@ -1029,13 +1029,20 @@
                 : <> Already have an account? <button onClick={() => switchMode('signin')}>Sign In</button></>
               }
             </div>
+            {onBack && (
+              <div style={{textAlign:'center', marginTop:12}}>
+                <button className="auth-toggle" style={{background:'none',border:'none',color:'#aaa',cursor:'pointer',fontSize:13}} onClick={onBack}>
+                  ← Back to Home
+                </button>
+              </div>
+            )}
           </div>
         </div>
       );
     }
 
     // ─── Landing Page ─────────────────────────────────────────────────────────────
-    function LandingPage({ onEnter }) {
+    function LandingPage({ onEnter, onSignIn, onSignUp }) {
       return (
         <div className="landing">
           <div className="landing-hero">
@@ -1050,9 +1057,16 @@
               quick meal after a busy day or want to try a new cuisine. Download our app
               to get started on new recipes today!
             </p>
-            <button className="landing-cta" onClick={onEnter}>
-              Browse Recipes →
-            </button>
+            {onEnter ? (
+              <button className="landing-cta" onClick={onEnter}>
+                Browse Recipes →
+              </button>
+            ) : (
+              <div className="landing-auth-btns">
+                <button className="landing-cta" onClick={onSignIn}>Login</button>
+                <button className="landing-cta landing-cta-outline" onClick={onSignUp}>Sign Up</button>
+              </div>
+            )}
           </div>
 
           <div className="landing-features">
@@ -1385,6 +1399,7 @@
     function App() {
       const [currentUser, setCurrentUser] = useState(null);
       const [authLoading, setAuthLoading] = useState(true);
+      const [authView, setAuthView] = useState(null); // null = landing, 'signin' | 'signup' = login form
 
       useEffect(() => {
         // onAuthStateChange fires immediately with INITIAL_SESSION (current session or null),
@@ -1401,7 +1416,15 @@
       }
 
       if (!currentUser) {
-        return <LoginPage />;
+        if (authView === 'signin' || authView === 'signup') {
+          return <LoginPage initialMode={authView} onBack={() => setAuthView(null)} />;
+        }
+        return (
+          <LandingPage
+            onSignIn={() => setAuthView('signin')}
+            onSignUp={() => setAuthView('signup')}
+          />
+        );
       }
 
       return <MainApp user={currentUser} />;

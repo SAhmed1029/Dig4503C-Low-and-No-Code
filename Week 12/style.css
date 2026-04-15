@@ -590,6 +590,20 @@ body {
 }
 .landing-cta:hover { background: #e6732e; }
 
+.landing-auth-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.landing-cta-outline {
+  background: transparent;
+  border: 2px solid #ff8c42;
+  color: #ff8c42;
+}
+.landing-cta-outline:hover { background: #ff8c42; color: #fff; }
+
 .landing-features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
