@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sara Ahmed | Portfolio</title>
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f0f13;
+      --surface:  #1a1a24;
+      --accent:   #7c5cfc;
+      --accent2:  #c084fc;
+      --text:     #e2e2f0;
+      --muted:    #8888aa;
+      --radius:   12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(15,15,19,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(124,92,252,.2);
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links { display: flex; gap: 0.25rem; list-style: none; }
+
+    .nav-links button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.95rem;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: color .2s, background .2s;
+    }
+
+    .nav-links button:hover,
+    .nav-links button.active {
+      color: var(--text);
+      background: rgba(124,92,252,.15);
+    }
+
+    .nav-links button.active { color: var(--accent2); font-weight: 600; }
+
+    /* ── Page sections ── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── Shared helpers ── */
+    .container { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
+
+    .section-label {
+      font-size: 0.75rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+
+    h1 { font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.15; }
+    h2 { font-size: 1.6rem; margin-bottom: 1.25rem; }
+    h3 { font-size: 1.1rem; }
+
+    p { line-height: 1.7; color: var(--muted); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(124,92,252,.15);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: .2rem .65rem;
+      border-radius: 100px;
+      background: rgba(124,92,252,.18);
+      color: var(--accent2);
+      margin: .2rem .1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: .6rem 1.4rem;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s, transform .15s;
+    }
+
+    .btn:hover { opacity: .85; transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent2);
+      border: 1px solid var(--accent);
+    }
+
+    /* ═══════════════════════════════
+       HOME PAGE
+    ═══════════════════════════════ */
+    #home .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: calc(100vh - 64px);
+      padding: 4rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    #home .hero-name {
+      background: linear-gradient(135deg, #fff 30%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #home .hero-sub {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin: 1rem 0 2rem;
+      max-width: 520px;
+    }
+
+    #home .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    #home .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    #home .stat-card { text-align: center; }
+    #home .stat-num {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #home .divider {
+      border: none;
+      border-top: 1px solid rgba(124,92,252,.15);
+      margin: 3rem 0;
+    }
+
+    /* ═══════════════════════════════
+       RESUME PAGE
+    ═══════════════════════════════ */
+    #resume .resume-section { margin-bottom: 2.5rem; }
+
+    #resume .resume-entry {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: .5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    #resume .entry-title { font-weight: 600; }
+    #resume .entry-org { color: var(--accent2); font-size: .9rem; }
+    #resume .entry-date { color: var(--muted); font-size: .85rem; white-space: nowrap; }
+    #resume .entry-desc { grid-column: 1 / -1; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+
+    #resume .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-top: .5rem;
+    }
+
+    #resume .download-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 2rem;
+    }
+
+    /* ═══════════════════════════════
+       PROJECTS PAGE
+    ═══════════════════════════════ */
+    #projects .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    #projects .project-card {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      transition: border-color .2s, transform .2s;
+    }
+
+    #projects .project-card:hover {
+      border-color: rgba(124,92,252,.5);
+      transform: translateY(-3px);
+    }
+
+    #projects .project-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    #projects .project-links { display: flex; gap: .5rem; margin-top: auto; }
+
+    /* ═══════════════════════════════
+       CONTACT PAGE
+    ═══════════════════════════════ */
+    #contact .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 640px) {
+      #contact .contact-grid { grid-template-columns: 1fr; }
+    }
+
+    #contact .contact-info { display: flex; flex-direction: column; gap: 1rem; }
+
+    #contact .contact-item {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .9rem 1.1rem;
+    }
+
+    #contact .contact-icon { font-size: 1.4rem; }
+    #contact .contact-label { font-size: .75rem; color: var(--muted); }
+    #contact .contact-value { font-size: .95rem; font-weight: 500; }
+
+    #contact form { display: flex; flex-direction: column; gap: 1rem; }
+
+    #contact label { font-size: .85rem; color: var(--muted); margin-bottom: .25rem; display: block; }
+
+    #contact input,
+    #contact textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid rgba(124,92,252,.2);
+      border-radius: 8px;
+      padding: .65rem 1rem;
+      color: var(--text);
+      font-size: .95rem;
+      font-family: inherit;
+      transition: border-color .2s;
+    }
+
+    #contact input:focus,
+    #contact textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    #contact textarea { resize: vertical; min-height: 130px; }
+
+    #contact .form-success {
+      display: none;
+      background: rgba(124,92,252,.12);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      color: var(--accent2);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════ NAVIGATION ════════════════════ -->
+<nav>
+  <span class="nav-logo">Sara Ahmed</span>
+  <ul class="nav-links">
+    <li><button onclick="showPage('home')" id="nav-home" class="active">Home</button></li>
+    <li><button onclick="showPage('resume')" id="nav-resume">Resume</button></li>
+    <li><button onclick="showPage('projects')" id="nav-projects">Projects</button></li>
+    <li><button onclick="showPage('contact')" id="nav-contact">Contact</button></li>
+  </ul>
+</nav>
+
+<!-- ════════════════════ HOME ════════════════════ -->
+<div id="home" class="page active">
+  <div class="hero">
+    <p class="section-label">Welcome to my portfolio</p>
+    <h1 class="hero-name">Hi, I'm<br>Sara Ahmed</h1>
+    <p class="hero-sub">
+      Customer service professional &amp; front-end developer with a passion for communication, problem-solving, and creating great experiences.
+    </p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="showPage('projects')">View My Work</button>
+      <button class="btn btn-outline" onclick="showPage('contact')">Get In Touch</button>
+    </div>
+
+    <hr class="divider" />
+
+    <p class="section-label">A little about me</p>
+    <h2>Who I Am</h2>
+    <p style="max-width:640px;margin-bottom:2rem;">
+      Experienced with managing client interactions and providing exceptional customer service.
+      I utilize effective communication and problem-solving skills to address and resolve issues,
+      with a track record of maintaining high customer satisfaction through attentive service and
+      thorough follow-up. I also bring front-end skills in HTML &amp; CSS to every project I take on.
+    </p>
+
+    <div class="about-grid">
+      <div class="card stat-card">
+        <div class="stat-num">5+</div>
+        <p style="margin-top:.25rem;">Jobs &amp; Roles</p>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-num">3+</div>
+        <p style="margin-top:.25rem;">Years of Work Experience</p>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-num">12+</div>
+        <p style="margin-top:.25rem;">Skills &amp; Competencies</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ RESUME ════════════════════ -->
+<div id="resume" class="page">
+  <div class="container">
+    <p class="section-label">My background</p>
+    <h2>Resume</h2>
+
+    <div class="download-bar">
+      <a href="#" class="btn btn-primary">Download PDF</a>
+    </div>
+
+    <!-- Education -->
+    <div class="resume-section">
+      <h3 style="color:var(--accent2);margin-bottom:1rem;">Education</h3>
+      <div class="card">
+        <div class="resume-entry">
+          <div>
+            <div class="entry-title">Associate of Arts</div>
+            <div class="entry-org">Seminole State College of Florida — Sanford, FL</div>
+          </div>
+          <div class="entry-date">06/2020</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experience -->
+    <div class="resume-section">
+      <h3 style="color:var(--accent2);margin-bottom:1rem;">Work History</h3>
+      <div class="card" style="display:flex;flex-direction:column;gap:1.25rem;">
+
+        <div class="resume-entry">
+          <div>
+            <div class="entry-title">BDC Service Representative</div>
+            <div class="entry-org">Seminole Toyota — Sanford, FL</div>
+          </div>
+          <div class="entry-date">09/2025 – Current</div>
+          <p class="entry-desc">
+            Assisted customers with inquiries and service appointments through phone and online communication.
+            Provided accurate information on vehicle services, pricing, and promotions.
+            Coordinated service schedules to optimize technician productivity and minimize wait times.
+            Utilized dealership software to track service requests and maintain detailed customer records.
+            Developed outbound call campaign strategies, resulting in increased service appointment bookings.
+          </p>
+        </div>
+
+        <hr style="border-color:rgba(124,92,252,.1);" />
+
+        <div class="resume-entry">
+          <div>
+            <div class="entry-title">Support Staff / Expeditor</div>
+            <div class="entry-org">The Hangry Bison — Lake Mary, FL</div>
+          </div>
+          <div class="entry-date">05/2025 – 09/2025</div>
+          <p class="entry-desc">
+            Coordinated timely delivery of food orders, ensuring efficient service and customer satisfaction.
+            Monitored inventory levels, assisting in stock replenishment and waste reduction.
+            Communicated effectively with team members to optimize workflow during peak hours and implemented food safety protocols.
+          </p>
+        </div>
+
+        <hr style="border-color:rgba(124,92,252,.1);" />
+
+        <div class="resume-entry">
+          <div>
+            <div class="entry-title">FOH Team Member</div>
+            <div class="entry-org">WAVE Sushi — Maitland, FL</div>
+          </div>
+          <div class="entry-date">08/2024 – 04/2025</div>
+          <p class="entry-desc">
+            Delivered exceptional customer service by promptly addressing inquiries and resolving issues.
+            Operated cash register efficiently and handled payments accurately.
+            Trained new team members on front-of-house procedures and customer interaction techniques.
+            Maintained excellent attendance and punctuality, demonstrating commitment to team success.
+          </p>
+        </div>
+
+        <hr style="border-color:rgba(124,92,252,.1);" />
+
+        <div class="resume-entry">
+          <div>
+            <div class="entry-title">Retail Sales Associate / Cashier</div>
+            <div class="entry-org">Bealls — Fern Park, FL</div>
+          </div>
+          <div class="entry-date">01/2024 – 07/2024</div>
+          <p class="entry-desc">
+            Processed customer transactions efficiently using POS systems.
+            Assisted customers with product selections and inquiries, enhancing the shopping experience.
+            Managed inventory levels by restocking merchandise and conducting regular counts.
+            Demonstrated adaptability by working various roles including cashiering, stocking, and fitting room assistance.
+          </p>
+        </div>
+
+        <hr style="border-color:rgba(124,92,252,.1);" />
+
+        <div class="resume-entry">
+          <div>
+            <div class="entry-title">Style Team Member</div>
+            <div class="entry-org">Target — Casselberry, FL</div>
+          </div>
+          <div class="entry-date">11/2023 – 05/2024</div>
+          <p class="entry-desc">
+            Ensured merchandise displays aligned with brand standards and implemented visual merchandising strategies.
+            Maintained stock levels and organized backroom inventory for efficiency.
+            Supported management in inventory audits and assisted team members during peak hours.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="resume-section">
+      <h3 style="color:var(--accent2);margin-bottom:1rem;">Skills</h3>
+      <div class="card">
+        <div class="skills-grid">
+          <span class="tag">HTML &amp; CSS</span>
+          <span class="tag">Strong Multitasking</span>
+          <span class="tag">Goal Oriented</span>
+          <span class="tag">Teamwork &amp; Collaboration</span>
+          <span class="tag">Quick Thinking</span>
+          <span class="tag">Time Management</span>
+          <span class="tag">Reliability</span>
+          <span class="tag">Adaptability</span>
+          <span class="tag">Analytical Thinking</span>
+          <span class="tag">Problem-Solving</span>
+          <span class="tag">Visual Communication</span>
+          <span class="tag">Customer Service</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ PROJECTS ════════════════════ -->
+<div id="projects" class="page">
+  <div class="container">
+    <p class="section-label">What I've built</p>
+    <h2>Projects</h2>
+
+    <div class="projects-grid">
+
+      <div class="card project-card">
+        <div class="project-icon">🥞</div>
+        <h3>La Petite Crêperie</h3>
+        <p>A multi-page restaurant website for a fictional French crêperie, featuring a full menu, about page, visit info, and contact form.</p>
+        <div>
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">Multi-page Site</span>
+        </div>
+        <div class="project-links">
+          <a href="../Week 3/index.html" class="btn btn-primary" style="font-size:.8rem;padding:.4rem 1rem;">View Project</a>
+        </div>
+      </div>
+
+      <div class="card project-card">
+        <div class="project-icon">🍽️</div>
+        <h3>Spoonful</h3>
+        <p>A recipe management app built with React. Browse, search, and add recipes with ingredient lists, step-by-step instructions, and category filters.</p>
+        <div>
+          <span class="tag">React</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">CSS</span>
+        </div>
+        <div class="project-links">
+          <a href="../Week 7/index.html" class="btn btn-primary" style="font-size:.8rem;padding:.4rem 1rem;">View Project</a>
+        </div>
+      </div>
+
+      <div class="card project-card">
+        <div class="project-icon">🌐</div>
+        <h3>Personal Portfolio</h3>
+        <p>A fully responsive portfolio site built with HTML, CSS, and vanilla JavaScript showcasing my design and development work.</p>
+        <div>
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="btn btn-primary" style="font-size:.8rem;padding:.4rem 1rem;">Live Site</a>
+          <a href="#" class="btn btn-outline" style="font-size:.8rem;padding:.4rem 1rem;">GitHub</a>
+        </div>
+      </div>
+
+      <div class="card project-card">
+        <div class="project-icon">🛒</div>
+        <h3>E-Commerce Mockup</h3>
+        <p>A high-fidelity Figma prototype for a fictional online store, including mobile and desktop layouts with a complete design system.</p>
+        <div>
+          <span class="tag">Figma</span>
+          <span class="tag">UI/UX</span>
+          <span class="tag">Prototyping</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="btn btn-primary" style="font-size:.8rem;padding:.4rem 1rem;">View Prototype</a>
+        </div>
+      </div>
+
+      <div class="card project-card">
+        <div class="project-icon">📱</div>
+        <h3>Mobile App Design</h3>
+        <p>UX research and interface design for a productivity mobile app. Includes user flows, wireframes, and interactive prototype.</p>
+        <div>
+          <span class="tag">UX Research</span>
+          <span class="tag">Wireframing</span>
+          <span class="tag">Figma</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="btn btn-primary" style="font-size:.8rem;padding:.4rem 1rem;">Case Study</a>
+        </div>
+      </div>
+
+      <div class="card project-card">
+        <div class="project-icon">🎬</div>
+        <h3>Motion Graphics Reel</h3>
+        <p>A collection of motion graphics and short animations created in Adobe After Effects for various class and freelance projects.</p>
+        <div>
+          <span class="tag">After Effects</span>
+          <span class="tag">Premiere Pro</span>
+          <span class="tag">Motion Design</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="btn btn-primary" style="font-size:.8rem;padding:.4rem 1rem;">Watch Reel</a>
+        </div>
+      </div>
+
+      <div class="card project-card">
+        <div class="project-icon">📰</div>
+        <h3>Blog Platform</h3>
+        <p>A fully functional blog built with WordPress featuring custom theme development, SEO optimization, and responsive layout.</p>
+        <div>
+          <span class="tag">WordPress</span>
+          <span class="tag">PHP</span>
+          <span class="tag">SEO</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="btn btn-primary" style="font-size:.8rem;padding:.4rem 1rem;">Visit Blog</a>
+          <a href="#" class="btn btn-outline" style="font-size:.8rem;padding:.4rem 1rem;">GitHub</a>
+        </div>
+      </div>
+
+      <div class="card project-card">
+        <div class="project-icon">🎨</div>
+        <h3>Brand Identity</h3>
+        <p>Full brand identity package for a local business including logo design, color palette, typography system, and brand guidelines.</p>
+        <div>
+          <span class="tag">Illustrator</span>
+          <span class="tag">Branding</span>
+          <span class="tag">Identity Design</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="btn btn-primary" style="font-size:.8rem;padding:.4rem 1rem;">View Project</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ CONTACT ════════════════════ -->
+<div id="contact" class="page">
+  <div class="container">
+    <p class="section-label">Let's connect</p>
+    <h2>Contact Me</h2>
+    <p style="margin-bottom:2.5rem;max-width:500px;">
+      Have a project in mind or just want to say hi? Fill out the form or reach me
+      through any of the channels below.
+    </p>
+
+    <div class="contact-grid">
+
+      <!-- Contact info -->
+      <div class="contact-info">
+        <div class="card contact-item">
+          <span class="contact-icon">✉️</span>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-value">saahmed3547@gmail.com</div>
+          </div>
+        </div>
+        <div class="card contact-item">
+          <span class="contact-icon">📞</span>
+          <div>
+            <div class="contact-label">Phone</div>
+            <div class="contact-value">(407) 773-8512</div>
+          </div>
+        </div>
+        <div class="card contact-item">
+          <span class="contact-icon">🔗</span>
+          <div>
+            <div class="contact-label">LinkedIn</div>
+            <div class="contact-value">linkedin.com/in/sara-ahmed-6a2826308</div>
+          </div>
+        </div>
+        <div class="card contact-item">
+          <span class="contact-icon">🐙</span>
+          <div>
+            <div class="contact-label">GitHub</div>
+            <div class="contact-value">github.com/SAhmed1029</div>
+          </div>
+        </div>
+        <div class="card contact-item">
+          <span class="contact-icon">📍</span>
+          <div>
+            <div class="contact-label">Location</div>
+            <div class="contact-value">Sanford, FL 32771</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact form -->
+      <div class="card">
+        <form id="contactForm" onsubmit="submitForm(event)">
+          <div>
+            <label for="fname">Name</label>
+            <input type="text" id="fname" placeholder="Jane Smith" required />
+          </div>
+          <div>
+            <label for="femail">Email</label>
+            <input type="email" id="femail" placeholder="jane@example.com" required />
+          </div>
+          <div>
+            <label for="fsubject">Subject</label>
+            <input type="text" id="fsubject" placeholder="Project inquiry" />
+          </div>
+          <div>
+            <label for="fmessage">Message</label>
+            <textarea id="fmessage" placeholder="Tell me about your project..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+        <div class="form-success" id="formSuccess">
+          Thanks for the message! You will hear from me soon!
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ SCRIPTS ════════════════════ -->
+<script>
+  const pages = ['home', 'resume', 'projects', 'contact'];
+
+  function showPage(id) {
+    pages.forEach(p => {
+      document.getElementById(p).classList.toggle('active', p === id);
+      document.getElementById('nav-' + p).classList.toggle('active', p === id);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function submitForm(e) {
+    e.preventDefault();
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
